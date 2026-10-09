@@ -21,6 +21,8 @@
     --brand-ink: #ffffff;
     --brand-ink-2: rgba(255, 255, 255, 0.78);
     --brand-soft: #eaf2ed;
+    --sel-bg: #0f4c3a;
+    --sel-ink: #ffffff;
     --pv: #1baf7a;
     --ein: #2a78d6;
     --verb: #eb6834;
@@ -40,6 +42,7 @@
       --border: rgba(255, 255, 255, 0.10);
       --brand: #0f3d2f;
       --brand-soft: #16231d;
+      --sel-bg: #1d6b50;
       --pv: #199e70;
       --ein: #3987e5;
       --verb: #d95926;
@@ -59,6 +62,7 @@
     --border: rgba(255, 255, 255, 0.10);
     --brand: #0f3d2f;
     --brand-soft: #16231d;
+    --sel-bg: #1d6b50;
     --pv: #199e70;
     --ein: #3987e5;
     --verb: #d95926;
@@ -110,7 +114,18 @@
   .hero-value { margin: 2px 0 0; font-size: 56px; font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; }
   .hero-value .unit { font-size: 24px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; margin-left: 6px; }
   .since { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .since h3 { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+  .since h3 { margin: 0; font-size: 14px; font-weight: 650; color: var(--ink); }
+  .since .range { margin: 1px 0 12px; font-size: 12.5px; color: var(--muted); }
+  .period { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 14px; }
+  .period button {
+    font: inherit; font-size: 13px; line-height: 1.2; padding: 6px 10px;
+    border-radius: 999px; border: 1px solid var(--border);
+    background: transparent; color: var(--ink-2); cursor: pointer;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+  .period button:hover { background: var(--brand-soft); color: var(--ink); }
+  .period button[aria-pressed="true"] { background: var(--sel-bg); border-color: var(--sel-bg); color: var(--sel-ink); font-weight: 600; }
+  .period button:focus-visible { outline: 2px solid var(--ein); outline-offset: 2px; }
   .since-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   .since-item .k { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-2); }
   .since-item .v { font-size: 20px; font-weight: 650; margin-top: 2px; }
@@ -207,7 +222,9 @@
       <p class="hero-label" id="hero-label">PV-Erzeugung gesamt</p>
       <p class="hero-value"><span id="hero-value"></span><span class="unit">kWh</span></p>
       <div class="since">
-        <h3 id="since-title">Seit der letzten Ablesung</h3>
+        <div class="period" id="period" role="group" aria-label="Zeitraum wählen"></div>
+        <h3 id="since-title"></h3>
+        <p class="range" id="since-range"></p>
         <div class="since-grid">
           <div class="since-item">
             <div class="k"><span class="key" style="background:var(--pv)"></span>PV-Erzeugung</div>
@@ -405,14 +422,61 @@
   setText("hero-label", "PV-Erzeugung seit " + dateStr(first.t));
   setText("hero-value", fmt(last.kum, 2));
 
-  if (prev) {
-    var dDays = Math.round((last.t - prev.t) / DAY);
-    setText("since-title", "Seit der letzten Ablesung · " + dateStr(prev.t, false) + " → " + dateStr(last.t) + " (" + dDays + " " + plural(dDays, "Tag", "Tage") + ")");
-    setText("since-pv", signed(last.kum - prev.kum, 2) + " kWh");
-    setText("since-pv-n", "Ø " + fmt((last.kum - prev.kum) / dDays, 1) + " kWh pro Tag");
-    setText("since-ein", signed(last.ein - prev.ein, 1) + " kWh");
-    setText("since-verb", signed(last.verb - prev.verb, 2) + " kWh");
+  /* ---------- Zeitraum-Auswahl ---------- */
+  var PERIODS = [
+    { id: "last", label: "Seit letzter Ablesung" },
+    { id: "14", label: "14 Tage", days: 14 },
+    { id: "30", label: "30 Tage", days: 30 },
+    { id: "60", label: "60 Tage", days: 60 },
+    { id: "90", label: "90 Tage", days: 90 },
+    { id: "all", label: "Seit Beginn" }
+  ];
+  // Kumulierte Werte zu einem Zeitpunkt (zwischen Ablesungen linear interpoliert)
+  function valuesAt(t) {
+    if (t <= first.t) return { kum: first.kum, ein: first.ein, verb: first.verb };
+    for (var i = 1; i < byDay.length; i++) {
+      var b = byDay[i];
+      if (t <= b.t) {
+        var a = byDay[i - 1], f = (t - a.t) / (b.t - a.t);
+        return { kum: a.kum + f * (b.kum - a.kum), ein: a.ein + f * (b.ein - a.ein), verb: a.verb + f * (b.verb - a.verb) };
+      }
+    }
+    return { kum: last.kum, ein: last.ein, verb: last.verb };
   }
+  function renderPeriod(id) {
+    var p = PERIODS.filter(function (x) { return x.id === id; })[0] || PERIODS[2];
+    var startT, title, note = "";
+    if (p.id === "last") { startT = prev ? prev.t : first.t; title = "Seit der letzten Ablesung"; }
+    else if (p.id === "all") { startT = first.t; title = "Seit Beginn"; }
+    else {
+      startT = last.t - p.days * DAY;
+      title = "Letzte " + p.days + " Tage";
+      if (startT < first.t) { startT = first.t; note = "Aufzeichnung beginnt am " + dateStr(first.t); }
+      else if (!byDay.some(function (r) { return r.t === startT; })) note = "Startwert zwischen zwei Ablesungen interpoliert";
+    }
+    var s = valuesAt(startT);
+    var days = Math.round((last.t - startT) / DAY);
+    setText("since-title", title);
+    setText("since-range", dateStr(startT, false) + " → " + dateStr(last.t) + " · " + days + " " + plural(days, "Tag", "Tage") + (note ? " · " + note : ""));
+    setText("since-pv", signed(last.kum - s.kum, 2) + " kWh");
+    setText("since-pv-n", days > 0 ? "Ø " + fmt((last.kum - s.kum) / days, 1) + " kWh pro Tag" : "");
+    setText("since-ein", signed(last.ein - s.ein, 1) + " kWh");
+    setText("since-verb", signed(last.verb - s.verb, 2) + " kWh");
+    Array.prototype.forEach.call(document.querySelectorAll("#period button"), function (btn) {
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-id") === p.id ? "true" : "false");
+    });
+  }
+  var periodBox = document.getElementById("period");
+  PERIODS.forEach(function (p) {
+    if (p.id === "last" && !prev) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("data-id", p.id);
+    btn.textContent = p.label;
+    btn.addEventListener("click", function () { renderPeriod(p.id); });
+    periodBox.appendChild(btn);
+  });
+  renderPeriod("30");
 
   setText("t-wert", fmt(last.kum * PREIS, 2));
   setText("t-wert-n", fmt(PREIS, 2) + " €/kWh × " + fmt(last.kum, 2) + " kWh");
