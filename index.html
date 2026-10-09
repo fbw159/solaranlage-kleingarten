@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solaranlage Kleingarten</title>
+<meta name="description" content="PV-Tracking der Solaranlage im Kleingarten: Erzeugung, bilanzierte Einspeisung und Verbrauch seit dem Vollausbau am 31.07.2026.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f4c3a'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23f5c84c'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f4f5f2;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #807e78;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --brand: #0f4c3a;
+    --brand-ink: #ffffff;
+    --brand-ink-2: rgba(255, 255, 255, 0.78);
+    --brand-soft: #eaf2ed;
+    --pv: #1baf7a;
+    --ein: #2a78d6;
+    --verb: #eb6834;
+    --good: #006300;
+    --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 4px 16px rgba(11, 11, 11, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #8f8d87;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --brand: #0f3d2f;
+      --brand-soft: #16231d;
+      --pv: #199e70;
+      --ein: #3987e5;
+      --verb: #d95926;
+      --good: #0ca30c;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #8f8d87;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --brand: #0f3d2f;
+    --brand-soft: #16231d;
+    --pv: #199e70;
+    --ein: #3987e5;
+    --verb: #d95926;
+    --good: #0ca30c;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+  /* Kopfbereich */
+  header.top {
+    background: var(--brand);
+    color: var(--brand-ink);
+    padding: 36px 0 30px;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--brand-ink-2); margin: 0 0 4px; font-weight: 600;
+  }
+  header.top h1 { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  header.top .stand { margin: 8px 0 0; color: var(--brand-ink-2); font-size: 14px; }
+
+  main { padding: 24px 0 40px; display: grid; gap: 20px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    min-width: 0;
+  }
+  .card h2 { margin: 0; font-size: 17px; font-weight: 650; }
+  .card .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; }
+
+  /* Übersicht */
+  .overview { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+  .hero-label { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .hero-value { margin: 2px 0 0; font-size: 56px; font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; }
+  .hero-value .unit { font-size: 24px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; margin-left: 6px; }
+  .since { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .since h3 { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+  .since-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .since-item .k { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-2); }
+  .since-item .v { font-size: 20px; font-weight: 650; margin-top: 2px; }
+  .since-item .n { font-size: 12.5px; color: var(--muted); }
+  .key { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+  dl.facts { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 9px 16px; font-size: 14px; }
+  dl.facts dt { color: var(--ink-2); }
+  dl.facts dd { margin: 0; font-weight: 550; }
+  .facts-card h2 { margin-bottom: 14px; }
+
+  /* Kennzahlen */
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .tile { position: relative; padding: 16px 18px 16px 22px; }
+  .tile::before {
+    content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px;
+    border-radius: 0 4px 4px 0; background: var(--accent, var(--axis));
+  }
+  .tile .label { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+  .tile .value { margin: 4px 0 0; font-size: 28px; font-weight: 650; line-height: 1.15; }
+  .tile .value .unit { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-left: 4px; }
+  .tile .note { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); }
+
+  /* Diagramme */
+  .chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; margin-bottom: 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; background: currentColor; }
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart:focus-visible { outline: 2px solid var(--ein); outline-offset: 4px; border-radius: 6px; }
+  .axis-text { fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .end-label { fill: var(--ink); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 5;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+    padding: 9px 12px; font-size: 13px; min-width: 150px;
+    opacity: 0; transition: opacity 0.12s ease;
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip .tt-date { color: var(--ink-2); font-size: 12.5px; margin-bottom: 5px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 8px; line-height: 1.6; }
+  .tooltip .tt-row b { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .tooltip .tt-row span.n { color: var(--ink-2); }
+  .tooltip .tt-key { width: 12px; height: 2px; border-radius: 2px; flex: none; }
+  .tooltip .tt-extra { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .charts-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+
+  /* Tabelle */
+  .table-wrap { overflow-x: auto; margin-top: 12px; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child, th:last-child, td:last-child { text-align: left; }
+  thead th { color: var(--ink-2); font-weight: 600; font-size: 12.5px; border-bottom: 1px solid var(--axis); }
+  tbody td { border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.latest td { background: var(--brand-soft); font-weight: 600; }
+  td.muted { color: var(--muted); }
+
+  footer.notes { color: var(--ink-2); font-size: 13px; }
+  footer.notes p { margin: 0 0 6px; }
+  footer.notes strong { color: var(--ink); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .overview { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .charts-2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    header.top { padding: 26px 0 22px; }
+    header.top h1 { font-size: 25px; }
+    .card { padding: 16px; border-radius: 12px; }
+    .hero-value { font-size: 46px; }
+    .since-grid { grid-template-columns: 1fr; gap: 10px; }
+    .tiles { gap: 12px; }
+    .tile .value { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Solaranlage Kleingarten · PV-Tracking</p>
+    <h1>Gesamtauswertung seit dem Vollausbau</h1>
+    <p class="stand" id="stand"></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="overview">
+    <div class="card">
+      <p class="hero-label" id="hero-label">PV-Erzeugung gesamt</p>
+      <p class="hero-value"><span id="hero-value"></span><span class="unit">kWh</span></p>
+      <div class="since">
+        <h3 id="since-title">Seit der letzten Ablesung</h3>
+        <div class="since-grid">
+          <div class="since-item">
+            <div class="k"><span class="key" style="background:var(--pv)"></span>PV-Erzeugung</div>
+            <div class="v" id="since-pv"></div>
+            <div class="n" id="since-pv-n"></div>
+          </div>
+          <div class="since-item">
+            <div class="k"><span class="key" style="background:var(--ein)"></span>Einspeisung (bil.)</div>
+            <div class="v" id="since-ein"></div>
+            <div class="n">Rückgang Hauptzähler</div>
+          </div>
+          <div class="since-item">
+            <div class="k"><span class="key" style="background:var(--verb)"></span>Verbrauch (bil.)</div>
+            <div class="v" id="since-verb"></div>
+            <div class="n">im Garten verbraucht</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card facts-card">
+      <h2>Anlage &amp; Zählerstände</h2>
+      <dl class="facts" id="facts"></dl>
+    </div>
+  </section>
+
+  <section class="tiles" aria-label="Kennzahlen">
+    <div class="card tile" style="--accent:var(--brand)">
+      <p class="label">Wert des PV-Stroms</p>
+      <p class="value"><span id="t-wert"></span><span class="unit">€</span></p>
+      <p class="note" id="t-wert-n"></p>
+    </div>
+    <div class="card tile" style="--accent:var(--ein)">
+      <p class="label">Bilanzierte Einspeisung</p>
+      <p class="value"><span id="t-ein"></span><span class="unit">kWh</span></p>
+      <p class="note" id="t-ein-n"></p>
+    </div>
+    <div class="card tile" style="--accent:var(--verb)">
+      <p class="label">Bilanzierter Verbrauch</p>
+      <p class="value"><span id="t-verb"></span><span class="unit">kWh</span></p>
+      <p class="note" id="t-verb-n"></p>
+    </div>
+    <div class="card tile" style="--accent:var(--pv)">
+      <p class="label">Ø Ertrag pro Tag</p>
+      <p class="value"><span id="t-tag"></span><span class="unit">kWh</span></p>
+      <p class="note" id="t-tag-n"></p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="chart-head">
+      <div>
+        <h2>Erzeugung und Bilanz seit Beginn</h2>
+        <p class="sub">Kumuliert in kWh – PV-Erzeugung teilt sich auf in bilanzierte Einspeisung und Verbrauch</p>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span style="color:var(--pv)"><i></i><span style="color:var(--ink-2)">PV-Erzeugung</span></span>
+        <span style="color:var(--ein)"><i></i><span style="color:var(--ink-2)">Einspeisung (bil.)</span></span>
+        <span style="color:var(--verb)"><i></i><span style="color:var(--ink-2)">Verbrauch (bil.)</span></span>
+      </div>
+    </div>
+    <div class="chart" id="chart-bilanz" tabindex="0" role="img" aria-label="Liniendiagramm: kumulierte PV-Erzeugung, bilanzierte Einspeisung und bilanzierter Verbrauch. Alle Werte stehen auch im Messwertprotokoll."></div>
+  </section>
+
+  <section class="charts-2">
+    <div class="card">
+      <div class="chart-head">
+        <div>
+          <h2>Ø Tagesertrag je Ableseintervall</h2>
+          <p class="sub">kWh pro Tag zwischen Ablesungen (Abstände unter 3 Tagen zusammengefasst)</p>
+        </div>
+      </div>
+      <div class="chart" id="chart-tag" tabindex="0" role="img" aria-label="Stufendiagramm: durchschnittlicher PV-Ertrag pro Tag in jedem Ableseintervall."></div>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <div>
+          <h2>Hauptzählerstand</h2>
+          <p class="sub">kWh – der Zähler läuft bei Einspeisung rückwärts</p>
+        </div>
+      </div>
+      <div class="chart" id="chart-hz" tabindex="0" role="img" aria-label="Liniendiagramm: Stand des Hauptzählers."></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Messwertprotokoll</h2>
+    <p class="sub">Alle Ablesungen seit Beginn des Vollausbaus, neueste zuerst</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Datum</th>
+            <th scope="col">Hauptzähler</th>
+            <th scope="col">PV-Zähler</th>
+            <th scope="col">PV kumuliert</th>
+            <th scope="col">Einspeisung bil.</th>
+            <th scope="col">Verbrauch bil.</th>
+            <th scope="col">Bemerkung</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="card notes">
+    <p><strong>PV-Erzeugung</strong> = Summe der Zuwächse am PV-Zähler seit 31.07.2026 (der Zählerreset am 05.08.2026 ist berücksichtigt).</p>
+    <p><strong>Bilanzierte Einspeisung</strong> = Rückgang des Hauptzählers seit Beginn. <strong>Bilanzierter Verbrauch</strong> = PV-Erzeugung − bilanzierte Einspeisung, also der Stromverbrauch im Garten im selben Zeitraum.</p>
+    <p id="note-preis"></p>
+    <p>Messwerte vor dem Vollausbau am 31.07.2026 wurden in einer Vorphase erfasst und sind nicht Bestandteil dieser Auswertung.</p>
+  </footer>
+</main>
+
+<script src="messwerte.js"></script>
+<script>
+(function () {
+  "use strict";
+  var A = window.PV_ANLAGE || {};
+  var RAW = (window.PV_MESSWERTE || []).slice();
+  var DAY = 864e5;
+  var PREIS = A.strompreis || 0.27;
+
+  /* ---------- Formatierung ---------- */
+  var nfCache = {};
+  function fmt(v, d) {
+    if (v == null || isNaN(v)) return "–";
+    d = d == null ? 1 : d;
+    if (!nfCache[d]) nfCache[d] = new Intl.NumberFormat("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
+    return nfCache[d].format(v);
+  }
+  function signed(v, d) { return (v > 0 ? "+" : v < 0 ? "−" : "±") + fmt(Math.abs(v), d); }
+  function parseDay(s) { var p = s.split("-").map(Number); return Date.UTC(p[0], p[1] - 1, p[2]); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function dateStr(t, year) {
+    var d = new Date(t);
+    return pad(d.getUTCDate()) + "." + pad(d.getUTCMonth() + 1) + "." + (year === false ? "" : d.getUTCFullYear());
+  }
+  var MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+  function plural(n, one, many) { return n === 1 ? one : many; }
+
+  /* ---------- Berechnung ---------- */
+  var hz0 = null, offset = 0, base = null, lastKum = 0;
+  var rows = RAW.map(function (r, i) {
+    if (base === null) base = r.pv;
+    if (r.reset) { offset = lastKum; base = r.pv; }
+    var kum = offset + (r.pv - base);
+    lastKum = kum;
+    if (hz0 === null && r.hz != null) hz0 = r.hz;
+    var ein = r.hz == null ? null : hz0 - r.hz;
+    return {
+      i: i, datum: r.datum, t: parseDay(r.datum), hz: r.hz, pv: r.pv, reset: !!r.reset,
+      notiz: r.notiz || "", kum: kum, ein: ein, verb: ein == null ? null : kum - ein
+    };
+  });
+
+  // Je Datum die letzte Ablesung mit Hauptzählerstand (Basis für Diagramme und Intervalle)
+  var byDay = [];
+  rows.forEach(function (r) {
+    if (r.hz == null) return;
+    if (byDay.length && byDay[byDay.length - 1].t === r.t) byDay[byDay.length - 1] = r;
+    else byDay.push(r);
+  });
+  var first = byDay[0], last = byDay[byDay.length - 1], prev = byDay[byDay.length - 2];
+  var totalDays = Math.round((last.t - first.t) / DAY);
+
+  // Intervalle für den Ø Tagesertrag: kurze Abstände (< MIN_TAGE) werden mit der nächsten Ablesung zusammengefasst
+  var MIN_TAGE = 3;
+  var intervals = [];
+  var anchor = byDay[0];
+  for (var k = 1; k < byDay.length; k++) {
+    var b = byDay[k];
+    var days = Math.round((b.t - anchor.t) / DAY);
+    if (days >= MIN_TAGE || k === byDay.length - 1) {
+      intervals.push({ a: anchor, b: b });
+      anchor = b;
+    }
+  }
+  // letztes Intervall zu kurz? Dann mit dem vorherigen zusammenlegen
+  if (intervals.length > 1) {
+    var li = intervals[intervals.length - 1];
+    if (Math.round((li.b.t - li.a.t) / DAY) < MIN_TAGE) {
+      intervals.pop();
+      intervals[intervals.length - 1].b = li.b;
+    }
+  }
+  intervals = intervals.map(function (iv) {
+    var d = Math.round((iv.b.t - iv.a.t) / DAY), kwh = iv.b.kum - iv.a.kum;
+    return { t0: iv.a.t, t1: iv.b.t, days: d, kwh: kwh, v: kwh / d };
+  });
+
+  /* ---------- Texte & Kennzahlen ---------- */
+  function setText(id, s) { var el = document.getElementById(id); if (el) el.textContent = s; }
+
+  setText("stand", "Stand: " + dateStr(last.t) + " · " + byDay.length + " Ablesetage · " + totalDays + " Tage seit Beginn");
+  setText("hero-label", "PV-Erzeugung seit " + dateStr(first.t));
+  setText("hero-value", fmt(last.kum, 2));
+
+  if (prev) {
+    var dDays = Math.round((last.t - prev.t) / DAY);
+    setText("since-title", "Seit der letzten Ablesung · " + dateStr(prev.t, false) + " → " + dateStr(last.t) + " (" + dDays + " " + plural(dDays, "Tag", "Tage") + ")");
+    setText("since-pv", signed(last.kum - prev.kum, 2) + " kWh");
+    setText("since-pv-n", "Ø " + fmt((last.kum - prev.kum) / dDays, 1) + " kWh pro Tag");
+    setText("since-ein", signed(last.ein - prev.ein, 1) + " kWh");
+    setText("since-verb", signed(last.verb - prev.verb, 2) + " kWh");
+  }
+
+  setText("t-wert", fmt(last.kum * PREIS, 2));
+  setText("t-wert-n", fmt(PREIS, 2) + " €/kWh × " + fmt(last.kum, 2) + " kWh");
+  setText("t-ein", fmt(last.ein, 1));
+  setText("t-ein-n", fmt(last.ein / last.kum * 100, 0) + " % der PV-Erzeugung");
+  setText("t-verb", fmt(last.verb, 2));
+  setText("t-verb-n", fmt(last.verb / last.kum * 100, 0) + " % der PV-Erzeugung");
+  setText("t-tag", fmt(last.kum / totalDays, 2));
+  setText("t-tag-n", A.leistungKWp ? fmt(last.kum / A.leistungKWp, 0) + " kWh/kWp spezifischer Ertrag" : "");
+  setText("note-preis", "Wert des PV-Stroms = PV-Erzeugung × " + fmt(PREIS, 2) + " €/kWh. Datumsangaben ohne Uhrzeit; bei mehreren Ablesungen am selben Tag zählt in den Diagrammen die letzte.");
+
+  var facts = [
+    ["Anlage", (A.module ? A.module + " = " : "") + fmt(A.leistungKWp, 2) + " kWp"],
+    ["Wechselrichter", A.wechselrichter || "–"],
+    ["Beginn", dateStr(first.t)],
+    ["Letzte Ablesung", dateStr(last.t)],
+    ["Hauptzähler", fmt(last.hz, 1) + " kWh"],
+    ["PV-Zähler", fmt(last.pv, 2) + " kWh"]
+  ];
+  var dl = document.getElementById("facts");
+  facts.forEach(function (f) {
+    var dt = document.createElement("dt"); dt.textContent = f[0];
+    var dd = document.createElement("dd"); dd.textContent = f[1];
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+
+  /* ---------- Tabelle ---------- */
+  var tbody = document.getElementById("tbody");
+  rows.slice().reverse().forEach(function (r, idx) {
+    var tr = document.createElement("tr");
+    if (idx === 0) tr.className = "latest";
+    var cells = [
+      dateStr(r.t),
+      r.hz == null ? "–" : fmt(r.hz, 1) + " kWh",
+      fmt(r.pv, 2) + " kWh",
+      fmt(r.kum, 2) + " kWh",
+      r.ein == null ? "–" : fmt(r.ein, 1) + " kWh",
+      r.verb == null ? "–" : fmt(r.verb, 2) + " kWh",
+      r.notiz || (idx === 0 ? "aktuell" : "")
+    ];
+    cells.forEach(function (c, ci) {
+      var td = document.createElement("td");
+      td.textContent = c;
+      if (c === "–") td.className = "muted";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  /* ---------- Diagramme ---------- */
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var a in attrs) e.setAttribute(a, attrs[a]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function niceTicks(min, max, count) {
+    var span = max - min || Math.abs(max) || 1;
+    var raw = span / count, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw / mag;
+    var step = (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1) * mag;
+    var lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step;
+    var ticks = [];
+    for (var v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v / step) * step);
+    return { lo: lo, hi: hi, step: step, ticks: ticks, dec: step < 1 ? (step < 0.1 ? 2 : 1) : 0 };
+  }
+  function timeTicks(t0, t1, maxTicks) {
+    var cands = [];
+    [7, 14].forEach(function (k) {
+      var d = new Date(t0); while (d.getUTCDay() !== 1) d.setUTCDate(d.getUTCDate() + 1);
+      var ts = []; while (d.getTime() <= t1) { ts.push(d.getTime()); d.setUTCDate(d.getUTCDate() + k); }
+      cands.push({ ticks: ts, label: function (t) { return dateStr(t, false); } });
+    });
+    [1, 2, 3, 6, 12].forEach(function (k) {
+      var d = new Date(t0), y = d.getUTCFullYear(), m = d.getUTCMonth();
+      var c = Date.UTC(y, m, 1); if (c < t0) { m++; }
+      var ts = [];
+      for (;;) {
+        var tt = Date.UTC(y, m, 1); if (tt > t1) break;
+        if (new Date(tt).getUTCMonth() % k === 0) ts.push(tt);
+        m++;
+      }
+      cands.push({ ticks: ts, label: function (t) { var dd = new Date(t); return dd.getUTCMonth() === 0 || k >= 12 ? MONTHS[dd.getUTCMonth()] + " " + dd.getUTCFullYear() : MONTHS[dd.getUTCMonth()]; } });
+    });
+    for (var i = 0; i < cands.length; i++) if (cands[i].ticks.length <= maxTicks && cands[i].ticks.length >= 2) return cands[i];
+    return cands[cands.length - 1];
+  }
+
+  var tMin = first.t, tMax = last.t;
+
+  /*
+   * cfg: { series: [{ name, color, dec, pts: [{t, v}] }], step: intervals|null,
+   *        yZero, height, unit, tooltip(t) }
+   */
+  function drawChart(container, cfg) {
+    container.innerHTML = "";
+    var W = Math.max(280, container.clientWidth);
+    var H = cfg.height || 260;
+    var narrow = W < 480;
+    var m = { top: 14, right: cfg.endLabels ? (narrow ? 50 : 60) : 14, bottom: 28, left: narrow ? 46 : 54 };
+    var pw = W - m.left - m.right, ph = H - m.top - m.bottom;
+
+    var vals = [];
+    cfg.series.forEach(function (s) { s.pts.forEach(function (p) { vals.push(p.v); }); });
+    if (cfg.step) cfg.step.forEach(function (iv) { vals.push(iv.v); });
+    var vmin = Math.min.apply(null, vals), vmax = Math.max.apply(null, vals);
+    if (cfg.yZero) vmin = Math.min(0, vmin);
+    var yt = niceTicks(vmin, vmax, narrow ? 4 : 5);
+    var x = function (t) { return m.left + (t - tMin) / (tMax - tMin || 1) * pw; };
+    var y = function (v) { return m.top + (1 - (v - yt.lo) / (yt.hi - yt.lo || 1)) * ph; };
+
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, "aria-hidden": "true" }, container);
+
+    // Gitter & y-Achse
+    yt.ticks.forEach(function (v) {
+      el("line", { x1: m.left, x2: m.left + pw, y1: y(v), y2: y(v), style: "stroke:var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }, svg);
+      var tx = el("text", { x: m.left - 8, y: y(v) + 4, "text-anchor": "end", "class": "axis-text" }, svg);
+      tx.textContent = fmt(v, yt.dec);
+    });
+    // x-Achse
+    el("line", { x1: m.left, x2: m.left + pw, y1: m.top + ph, y2: m.top + ph, style: "stroke:var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, svg);
+    var tt = timeTicks(tMin, tMax, Math.max(2, Math.floor(pw / 74)));
+    tt.ticks.forEach(function (t) {
+      var xx = x(t);
+      el("line", { x1: xx, x2: xx, y1: m.top + ph, y2: m.top + ph + 4, style: "stroke:var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, svg);
+      if (xx > m.left + pw + m.right - 18) return;
+      var anchorPos = xx < m.left + 16 ? "start" : "middle";
+      var tx = el("text", { x: anchorPos === "start" ? Math.max(xx - 3, m.left - 4) : xx, y: m.top + ph + 18, "text-anchor": anchorPos, "class": "axis-text" }, svg);
+      tx.textContent = tt.label(t);
+    });
+
+    // Stufen (Ø Tagesertrag)
+    var stepColor = cfg.stepColor || "var(--pv)";
+    var hiBand = null;
+    if (cfg.step) {
+      hiBand = el("rect", { x: 0, y: m.top, width: 0, height: ph, style: "fill:var(--ink);opacity:0.05", visibility: "hidden" }, svg);
+      var d = "", da = "";
+      cfg.step.forEach(function (iv, i) {
+        var x0 = x(iv.t0), x1 = x(iv.t1), yy = y(iv.v);
+        d += (i === 0 ? "M" + x0 + "," + yy : "V" + yy) + "H" + x1;
+      });
+      da = d + "V" + y(yt.lo) + "H" + x(cfg.step[0].t0) + "Z";
+      el("path", { d: da, style: "fill:" + stepColor + ";opacity:0.12" }, svg);
+      el("path", { d: d, fill: "none", style: "stroke:" + stepColor, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    }
+
+    // Linien
+    cfg.series.forEach(function (s) {
+      if (!s.pts.length) return;
+      var d = s.pts.map(function (p, i) { return (i ? "L" : "M") + x(p.t).toFixed(1) + "," + y(p.v).toFixed(1); }).join("");
+      if (s.area) {
+        var da = d + "L" + x(s.pts[s.pts.length - 1].t) + "," + y(yt.lo) + "L" + x(s.pts[0].t) + "," + y(yt.lo) + "Z";
+        el("path", { d: da, style: "fill:" + s.color + ";opacity:0.10" }, svg);
+      }
+      el("path", { d: d, fill: "none", style: "stroke:" + s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+
+    // Endpunkte + Endbeschriftung (Kollisionen auflösen)
+    if (cfg.endLabels) {
+      var labels = cfg.series.filter(function (s) { return s.pts.length; }).map(function (s) {
+        var p = s.pts[s.pts.length - 1];
+        return { s: s, p: p, y: y(p.v) };
+      }).sort(function (a, b) { return a.y - b.y; });
+      for (var i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < 15) labels[i].y = labels[i - 1].y + 15;
+      labels.forEach(function (L) {
+        el("circle", { cx: x(L.p.t), cy: y(L.p.v), r: 4, style: "fill:" + L.s.color + ";stroke:var(--surface)", "stroke-width": 2 }, svg);
+        var tx = el("text", { x: x(L.p.t) + 9, y: L.y + 4, "class": "end-label" }, svg);
+        tx.textContent = fmt(L.p.v, L.s.dec == null ? 1 : L.s.dec);
+      });
+    }
+
+    // Interaktion
+    var cross = el("line", { x1: 0, x2: 0, y1: m.top, y2: m.top + ph, style: "stroke:var(--muted)", "stroke-width": 1, visibility: "hidden", "shape-rendering": "crispEdges" }, svg);
+    var dots = cfg.series.map(function (s) {
+      return el("circle", { r: 4, style: "fill:" + s.color + ";stroke:var(--surface)", "stroke-width": 2, visibility: "hidden" }, svg);
+    });
+    var hit = el("rect", { x: m.left, y: m.top, width: pw, height: ph + m.bottom, fill: "transparent", style: "cursor:crosshair" }, svg);
+
+    var tip = document.createElement("div");
+    tip.className = "tooltip";
+    container.appendChild(tip);
+
+    // Positionen zum Einrasten
+    var stops;
+    if (cfg.step) stops = cfg.step.map(function (iv, i) { return { i: i, x0: x(iv.t0), x1: x(iv.t1), xm: (x(iv.t0) + x(iv.t1)) / 2 }; });
+    else {
+      var ts = {};
+      cfg.series.forEach(function (s) { s.pts.forEach(function (p) { ts[p.t] = 1; }); });
+      stops = Object.keys(ts).map(Number).sort(function (a, b) { return a - b; }).map(function (t, i) { return { i: i, t: t, xm: x(t) }; });
+    }
+    var cur = -1;
+
+    function show(idx) {
+      if (idx < 0 || idx >= stops.length) return;
+      cur = idx;
+      var st = stops[idx];
+      while (tip.firstChild) tip.removeChild(tip.firstChild);
+      var head = document.createElement("div"); head.className = "tt-date"; tip.appendChild(head);
+      function row(color, value, name) {
+        var r = document.createElement("div"); r.className = "tt-row";
+        var k = document.createElement("span"); k.className = "tt-key"; k.style.background = color; r.appendChild(k);
+        var b = document.createElement("b"); b.textContent = value; r.appendChild(b);
+        var n = document.createElement("span"); n.className = "n"; n.textContent = name; r.appendChild(n);
+        tip.appendChild(r);
+      }
+      var anchorX;
+      if (cfg.step) {
+        var iv = cfg.step[idx];
+        head.textContent = dateStr(iv.t0, false) + " – " + dateStr(iv.t1);
+        row(stepColor, fmt(iv.v, 2) + " kWh", "pro Tag");
+        var ex = document.createElement("div"); ex.className = "tt-extra";
+        ex.textContent = fmt(iv.kwh, 2) + " kWh in " + iv.days + " " + plural(iv.days, "Tag", "Tagen");
+        tip.appendChild(ex);
+        hiBand.setAttribute("x", st.x0); hiBand.setAttribute("width", Math.max(1, st.x1 - st.x0));
+        hiBand.setAttribute("visibility", "visible");
+        anchorX = st.xm;
+      } else {
+        head.textContent = dateStr(st.t);
+        cfg.series.forEach(function (s, si) {
+          var p = null;
+          for (var j = 0; j < s.pts.length; j++) if (s.pts[j].t === st.t) { p = s.pts[j]; break; }
+          if (p) {
+            row(s.color, fmt(p.v, s.dec == null ? 1 : s.dec) + " kWh", s.name);
+            dots[si].setAttribute("cx", x(p.t)); dots[si].setAttribute("cy", y(p.v)); dots[si].setAttribute("visibility", "visible");
+          } else dots[si].setAttribute("visibility", "hidden");
+        });
+        cross.setAttribute("x1", st.xm); cross.setAttribute("x2", st.xm); cross.setAttribute("visibility", "visible");
+        anchorX = st.xm;
+      }
+      // Tooltip positionieren (in CSS-Pixeln des Containers)
+      var scale = container.clientWidth / W;
+      var px = anchorX * scale;
+      tip.classList.add("show");
+      var tw = tip.offsetWidth, th = tip.offsetHeight;
+      var left = px + 14;
+      if (left + tw > container.clientWidth) left = px - tw - 14;
+      if (left < 0) left = 0;
+      tip.style.left = left + "px";
+      tip.style.top = Math.max(0, m.top * scale) + "px";
+    }
+    function hide() {
+      cur = -1;
+      tip.classList.remove("show");
+      cross.setAttribute("visibility", "hidden");
+      dots.forEach(function (d) { d.setAttribute("visibility", "hidden"); });
+      if (hiBand) hiBand.setAttribute("visibility", "hidden");
+    }
+    function nearest(evt) {
+      var rect = svg.getBoundingClientRect();
+      var px = (evt.clientX - rect.left) * (W / rect.width);
+      var best = 0, bd = Infinity;
+      stops.forEach(function (s, i) {
+        var dist = cfg.step ? (px >= s.x0 && px <= s.x1 ? 0 : Math.min(Math.abs(px - s.x0), Math.abs(px - s.x1))) : Math.abs(px - s.xm);
+        if (dist < bd) { bd = dist; best = i; }
+      });
+      return best;
+    }
+    hit.addEventListener("pointermove", function (e) { show(nearest(e)); });
+    hit.addEventListener("pointerdown", function (e) { show(nearest(e)); });
+    hit.addEventListener("pointerleave", hide);
+    container.onkeydown = function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        var n = cur < 0 ? stops.length - 1 : cur + (e.key === "ArrowRight" ? 1 : -1);
+        show(Math.max(0, Math.min(stops.length - 1, n)));
+      } else if (e.key === "Escape") hide();
+    };
+    container.onfocus = function () { show(stops.length - 1); };
+    container.onblur = hide;
+  }
+
+  var pvPts = byDay.map(function (r) { return { t: r.t, v: r.kum }; });
+  var einPts = byDay.map(function (r) { return { t: r.t, v: r.ein }; });
+  var verbPts = byDay.map(function (r) { return { t: r.t, v: r.verb }; });
+  var hzPts = byDay.map(function (r) { return { t: r.t, v: r.hz }; });
+
+  function render() {
+    drawChart(document.getElementById("chart-bilanz"), {
+      height: 300, yZero: true, endLabels: true,
+      series: [
+        { name: "PV-Erzeugung", color: "var(--pv)", dec: 2, pts: pvPts },
+        { name: "Einspeisung (bil.)", color: "var(--ein)", dec: 1, pts: einPts },
+        { name: "Verbrauch (bil.)", color: "var(--verb)", dec: 2, pts: verbPts }
+      ]
+    });
+    drawChart(document.getElementById("chart-tag"), {
+      height: 240, yZero: true, endLabels: false, series: [], step: intervals
+    });
+    drawChart(document.getElementById("chart-hz"), {
+      height: 240, yZero: false, endLabels: true,
+      series: [{ name: "Hauptzähler", color: "var(--ein)", dec: 1, pts: hzPts }]
+    });
+  }
+  render();
+  var rt = null, lastW = window.innerWidth;
+  window.addEventListener("resize", function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(rt); rt = setTimeout(render, 120);
+  });
+})();
+</script>
+</body>
+</html>
