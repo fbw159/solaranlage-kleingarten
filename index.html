@@ -95,7 +95,7 @@
   header.top h1 { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
   header.top .stand { margin: 8px 0 0; color: var(--brand-ink-2); font-size: 14px; }
 
-  main { padding: 24px 0 40px; display: grid; gap: 20px; }
+  main.wrap { padding-top: 20px; padding-bottom: 40px; display: grid; gap: 20px; }
 
   .card {
     background: var(--surface);
@@ -109,7 +109,8 @@
   .card .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; }
 
   /* Übersicht */
-  .overview { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+  .hero-card { display: grid; grid-template-columns: minmax(230px, 0.8fr) minmax(0, 2fr); align-items: start; }
+  .hero-card .since { margin: 0; padding: 0 0 0 28px; border-top: 0; border-left: 1px solid var(--border); }
   .hero-label { margin: 0; color: var(--ink-2); font-size: 14px; }
   .hero-value { margin: 2px 0 0; font-size: 56px; font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; }
   .hero-value .unit { font-size: 24px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; margin-left: 6px; }
@@ -118,7 +119,7 @@
   .since .range { margin: 1px 0 12px; font-size: 12.5px; color: var(--muted); }
   .period { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 14px; }
   .period button {
-    font: inherit; font-size: 13px; line-height: 1.2; padding: 6px 10px;
+    font: inherit; font-size: 12.5px; line-height: 1.2; padding: 6px 9px;
     border-radius: 999px; border: 1px solid var(--border);
     background: transparent; color: var(--ink-2); cursor: pointer;
     transition: background-color 0.12s ease, color 0.12s ease;
@@ -132,10 +133,9 @@
   .since-item .n { font-size: 12.5px; color: var(--muted); }
   .key { width: 10px; height: 10px; border-radius: 3px; flex: none; }
 
-  dl.facts { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 9px 16px; font-size: 14px; }
-  dl.facts dt { color: var(--ink-2); }
-  dl.facts dd { margin: 0; font-weight: 550; }
-  .facts-card h2 { margin-bottom: 14px; }
+  dl.facts { margin: 14px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 24px; font-size: 14px; }
+  dl.facts dt { color: var(--ink-2); font-size: 13px; }
+  dl.facts dd { margin: 1px 0 0; font-weight: 600; }
 
   /* Kennzahlen */
   .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
@@ -192,7 +192,9 @@
   footer.notes strong { color: var(--ink); font-weight: 600; }
 
   @media (max-width: 900px) {
-    .overview { grid-template-columns: 1fr; }
+    .hero-card { grid-template-columns: 1fr; }
+    dl.facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero-card .since { margin-top: 18px; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--border); }
     .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .charts-2 { grid-template-columns: 1fr; }
   }
@@ -217,36 +219,32 @@
 </header>
 
 <main class="wrap">
-  <section class="overview">
-    <div class="card">
+  <section class="card hero-card">
+    <div>
       <p class="hero-label" id="hero-label">PV-Erzeugung gesamt</p>
       <p class="hero-value"><span id="hero-value"></span><span class="unit">kWh</span></p>
-      <div class="since">
-        <div class="period" id="period" role="group" aria-label="Zeitraum wählen"></div>
-        <h3 id="since-title"></h3>
-        <p class="range" id="since-range"></p>
-        <div class="since-grid">
-          <div class="since-item">
-            <div class="k"><span class="key" style="background:var(--pv)"></span>PV-Erzeugung</div>
-            <div class="v" id="since-pv"></div>
-            <div class="n" id="since-pv-n"></div>
-          </div>
-          <div class="since-item">
-            <div class="k"><span class="key" style="background:var(--ein)"></span>Einspeisung (bil.)</div>
-            <div class="v" id="since-ein"></div>
-            <div class="n">Rückgang Hauptzähler</div>
-          </div>
-          <div class="since-item">
-            <div class="k"><span class="key" style="background:var(--verb)"></span>Verbrauch (bil.)</div>
-            <div class="v" id="since-verb"></div>
-            <div class="n">im Garten verbraucht</div>
-          </div>
+    </div>
+    <div class="since">
+      <div class="period" id="period" role="group" aria-label="Zeitraum wählen"></div>
+      <h3 id="since-title"></h3>
+      <p class="range" id="since-range"></p>
+      <div class="since-grid">
+        <div class="since-item">
+          <div class="k"><span class="key" style="background:var(--pv)"></span>PV-Erzeugung</div>
+          <div class="v" id="since-pv"></div>
+          <div class="n" id="since-pv-n"></div>
+        </div>
+        <div class="since-item">
+          <div class="k"><span class="key" style="background:var(--ein)"></span>Einspeisung (bil.)</div>
+          <div class="v" id="since-ein"></div>
+          <div class="n">Rückgang Hauptzähler</div>
+        </div>
+        <div class="since-item">
+          <div class="k"><span class="key" style="background:var(--verb)"></span>Verbrauch (bil.)</div>
+          <div class="v" id="since-verb"></div>
+          <div class="n">im Garten verbraucht</div>
         </div>
       </div>
-    </div>
-    <div class="card facts-card">
-      <h2>Anlage &amp; Zählerstände</h2>
-      <dl class="facts" id="facts"></dl>
     </div>
   </section>
 
@@ -307,6 +305,11 @@
       </div>
       <div class="chart" id="chart-hz" tabindex="0" role="img" aria-label="Liniendiagramm: Stand des Hauptzählers."></div>
     </div>
+  </section>
+
+  <section class="card">
+    <h2>Anlage &amp; Zählerstände</h2>
+    <dl class="facts" id="facts"></dl>
   </section>
 
   <section class="card">
@@ -498,9 +501,10 @@
   ];
   var dl = document.getElementById("facts");
   facts.forEach(function (f) {
+    var item = document.createElement("div");
     var dt = document.createElement("dt"); dt.textContent = f[0];
     var dd = document.createElement("dd"); dd.textContent = f[1];
-    dl.appendChild(dt); dl.appendChild(dd);
+    item.appendChild(dt); item.appendChild(dd); dl.appendChild(item);
   });
 
   /* ---------- Tabelle ---------- */
