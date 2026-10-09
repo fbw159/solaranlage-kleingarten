@@ -11,5 +11,5 @@ Berechnung:
 
 - PV-Erzeugung = Summe der Zuwächse am PV-Zähler (Zählerreset am 05.08.2026 berücksichtigt)
 - Bilanzierte Einspeisung = Rückgang des Hauptzählers seit 31.07.2026
-- Bilanzierter Verbrauch = PV-Erzeugung − bilanzierte Einspeisung
+- Gesamtverbrauch Garten = PV-Erzeugung + Änderung des Hauptzählers (= PV-Erzeugung − bilanzierte Einspeisung), also PV-Strom + Netzstrom
 - Wert des PV-Stroms = PV-Erzeugung × 0,27 €/kWh

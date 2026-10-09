@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Solaranlage Kleingarten</title>
-<meta name="description" content="PV-Tracking der Solaranlage im Kleingarten: Erzeugung, bilanzierte Einspeisung und Verbrauch seit dem Vollausbau am 31.07.2026.">
+<meta name="description" content="PV-Tracking der Solaranlage im Kleingarten: Erzeugung, bilanzierte Einspeisung und Gesamtverbrauch seit dem Vollausbau am 31.07.2026.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f4c3a'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23f5c84c'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -240,9 +240,9 @@
           <div class="n">Rückgang Hauptzähler</div>
         </div>
         <div class="since-item">
-          <div class="k"><span class="key" style="background:var(--verb)"></span>Verbrauch (bil.)</div>
+          <div class="k"><span class="key" style="background:var(--verb)"></span>Gesamtverbrauch Garten</div>
           <div class="v" id="since-verb"></div>
-          <div class="n">im Garten verbraucht</div>
+          <div class="n">PV-Strom + Netzstrom</div>
         </div>
       </div>
     </div>
@@ -260,7 +260,7 @@
       <p class="note" id="t-ein-n"></p>
     </div>
     <div class="card tile" style="--accent:var(--verb)">
-      <p class="label">Bilanzierter Verbrauch</p>
+      <p class="label">Gesamtverbrauch Garten</p>
       <p class="value"><span id="t-verb"></span><span class="unit">kWh</span></p>
       <p class="note" id="t-verb-n"></p>
     </div>
@@ -275,15 +275,15 @@
     <div class="chart-head">
       <div>
         <h2>Erzeugung und Bilanz seit Beginn</h2>
-        <p class="sub">Kumuliert in kWh – PV-Erzeugung teilt sich auf in bilanzierte Einspeisung und Verbrauch</p>
+        <p class="sub">Kumuliert in kWh – PV-Erzeugung teilt sich auf in bilanzierte Einspeisung und Gesamtverbrauch Garten</p>
       </div>
       <div class="legend" aria-hidden="true">
         <span style="color:var(--pv)"><i></i><span style="color:var(--ink-2)">PV-Erzeugung</span></span>
         <span style="color:var(--ein)"><i></i><span style="color:var(--ink-2)">Einspeisung (bil.)</span></span>
-        <span style="color:var(--verb)"><i></i><span style="color:var(--ink-2)">Verbrauch (bil.)</span></span>
+        <span style="color:var(--verb)"><i></i><span style="color:var(--ink-2)">Gesamtverbrauch Garten</span></span>
       </div>
     </div>
-    <div class="chart" id="chart-bilanz" tabindex="0" role="img" aria-label="Liniendiagramm: kumulierte PV-Erzeugung, bilanzierte Einspeisung und bilanzierter Verbrauch. Alle Werte stehen auch im Messwertprotokoll."></div>
+    <div class="chart" id="chart-bilanz" tabindex="0" role="img" aria-label="Liniendiagramm: kumulierte PV-Erzeugung, bilanzierte Einspeisung und Gesamtverbrauch im Garten. Alle Werte stehen auch im Messwertprotokoll."></div>
   </section>
 
   <section class="charts-2">
@@ -324,7 +324,7 @@
             <th scope="col">PV-Zähler</th>
             <th scope="col">PV kumuliert</th>
             <th scope="col">Einspeisung bil.</th>
-            <th scope="col">Verbrauch bil.</th>
+            <th scope="col">Gesamtverbrauch</th>
             <th scope="col">Bemerkung</th>
           </tr>
         </thead>
@@ -335,7 +335,7 @@
 
   <footer class="card notes">
     <p><strong>PV-Erzeugung</strong> = Summe der Zuwächse am PV-Zähler seit 31.07.2026 (der Zählerreset am 05.08.2026 ist berücksichtigt).</p>
-    <p><strong>Bilanzierte Einspeisung</strong> = Rückgang des Hauptzählers seit Beginn. <strong>Bilanzierter Verbrauch</strong> = PV-Erzeugung − bilanzierte Einspeisung, also der Stromverbrauch im Garten im selben Zeitraum.</p>
+    <p><strong>Bilanzierte Einspeisung</strong> = Rückgang des Hauptzählers seit Beginn. <strong>Gesamtverbrauch Garten</strong> = PV-Erzeugung + Änderung des Hauptzählers (= PV-Erzeugung − bilanzierte Einspeisung), also der komplette Stromverbrauch im Garten aus PV-Strom und Netzstrom.</p>
     <p id="note-preis"></p>
     <p>Messwerte vor dem Vollausbau am 31.07.2026 wurden in einer Vorphase erfasst und sind nicht Bestandteil dieser Auswertung.</p>
   </footer>
@@ -763,7 +763,7 @@
       series: [
         { name: "PV-Erzeugung", color: "var(--pv)", dec: 2, pts: pvPts },
         { name: "Einspeisung (bil.)", color: "var(--ein)", dec: 1, pts: einPts },
-        { name: "Verbrauch (bil.)", color: "var(--verb)", dec: 2, pts: verbPts }
+        { name: "Gesamtverbrauch Garten", color: "var(--verb)", dec: 2, pts: verbPts }
       ]
     });
     drawChart(document.getElementById("chart-tag"), {
