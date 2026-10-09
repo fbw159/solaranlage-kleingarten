@@ -2,9 +2,10 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Solaranlage Kleingarten</title>
 <meta name="description" content="PV-Tracking der Solaranlage im Kleingarten: Erzeugung, bilanzierte Einspeisung und Gesamtverbrauch seit dem Vollausbau am 31.07.2026.">
+<meta name="theme-color" content="#0f4c3a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f4c3a'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23f5c84c'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -13,20 +14,19 @@
     --surface: #fcfcfb;
     --ink: #0b0b0b;
     --ink-2: #52514e;
-    --muted: #807e78;
-    --grid: #e1e0d9;
+    --muted: #7d7b75;
+    --grid: #e6e5df;
     --axis: #c3c2b7;
-    --border: rgba(11, 11, 11, 0.10);
+    --border: rgba(11, 11, 11, 0.09);
     --brand: #0f4c3a;
     --brand-ink: #ffffff;
-    --brand-ink-2: rgba(255, 255, 255, 0.78);
+    --brand-ink-2: rgba(255, 255, 255, 0.75);
     --brand-soft: #eaf2ed;
-    --sel-bg: #0f4c3a;
-    --sel-ink: #ffffff;
+    --seg-bg: #ecebe6;
+    --seg-on: #ffffff;
     --pv: #1baf7a;
     --ein: #2a78d6;
     --verb: #eb6834;
-    --good: #006300;
     --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 4px 16px rgba(11, 11, 11, 0.04);
   }
   @media (prefers-color-scheme: dark) {
@@ -39,14 +39,14 @@
       --muted: #8f8d87;
       --grid: #2c2c2a;
       --axis: #383835;
-      --border: rgba(255, 255, 255, 0.10);
+      --border: rgba(255, 255, 255, 0.09);
       --brand: #0f3d2f;
       --brand-soft: #16231d;
-      --sel-bg: #1d6b50;
+      --seg-bg: #262624;
+      --seg-on: #3d3d3a;
       --pv: #199e70;
       --ein: #3987e5;
       --verb: #d95926;
-      --good: #0ca30c;
       --shadow: none;
     }
   }
@@ -59,14 +59,14 @@
     --muted: #8f8d87;
     --grid: #2c2c2a;
     --axis: #383835;
-    --border: rgba(255, 255, 255, 0.10);
+    --border: rgba(255, 255, 255, 0.09);
     --brand: #0f3d2f;
     --brand-soft: #16231d;
-    --sel-bg: #1d6b50;
+    --seg-bg: #262624;
+    --seg-on: #3d3d3a;
     --pv: #199e70;
     --ein: #3987e5;
     --verb: #d95926;
-    --good: #0ca30c;
     --shadow: none;
   }
 
@@ -77,88 +77,71 @@
     color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 15px;
-    line-height: 1.5;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
 
-  /* Kopfbereich */
-  header.top {
-    background: var(--brand);
-    color: var(--brand-ink);
-    padding: 36px 0 30px;
-  }
-  .eyebrow {
-    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--brand-ink-2); margin: 0 0 4px; font-weight: 600;
-  }
-  header.top h1 { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
-  header.top .stand { margin: 8px 0 0; color: var(--brand-ink-2); font-size: 14px; }
+  /* Kopf */
+  header.top { background: var(--brand); color: var(--brand-ink); padding: 18px 0 16px; }
+  header.top h1 { margin: 0; font-size: 21px; line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; }
+  header.top p { margin: 3px 0 0; font-size: 13.5px; color: var(--brand-ink-2); }
 
-  main.wrap { padding-top: 20px; padding-bottom: 40px; display: grid; gap: 20px; }
+  main.wrap { padding-top: 16px; padding-bottom: 32px; display: grid; gap: 16px; }
 
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow: var(--shadow);
-    padding: 20px 22px;
+    padding: 16px;
     min-width: 0;
   }
-  .card h2 { margin: 0; font-size: 17px; font-weight: 650; }
-  .card .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .card-head h2 { margin: 0; font-size: 17px; font-weight: 650; }
+  .card-head .sub { margin: 0; color: var(--muted); font-size: 13px; }
+  .card-head.stack { display: block; }
+  .card-head.stack .sub { margin-top: 2px; }
 
-  /* Übersicht */
-  .hero-card { display: grid; grid-template-columns: minmax(230px, 0.8fr) minmax(0, 2fr); align-items: start; }
-  .hero-card .since { margin: 0; padding: 0 0 0 28px; border-top: 0; border-left: 1px solid var(--border); }
-  .hero-label { margin: 0; color: var(--ink-2); font-size: 14px; }
-  .hero-value { margin: 2px 0 0; font-size: 56px; font-weight: 650; line-height: 1.05; letter-spacing: -0.02em; }
-  .hero-value .unit { font-size: 24px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; margin-left: 6px; }
-  .since { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .since h3 { margin: 0; font-size: 14px; font-weight: 650; color: var(--ink); }
-  .since .range { margin: 1px 0 12px; font-size: 12.5px; color: var(--muted); }
-  .period { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 14px; }
-  .period button {
-    font: inherit; font-size: 12.5px; line-height: 1.2; padding: 6px 9px;
-    border-radius: 999px; border: 1px solid var(--border);
-    background: transparent; color: var(--ink-2); cursor: pointer;
-    transition: background-color 0.12s ease, color 0.12s ease;
+  /* Gesamt */
+  .hero { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 8px; margin: 2px 0 6px; }
+  .hero-value { font-size: 44px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .hero-unit { font-size: 20px; font-weight: 600; color: var(--ink-2); }
+  .hero-label { flex-basis: 100%; display: flex; align-items: center; gap: 7px; color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+
+  /* Zeilenliste (Gesamt & Zeitraum) */
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--grid); }
+  .rows .lbl { display: flex; align-items: flex-start; gap: 9px; min-width: 0; }
+  .rows .lbl .t { display: block; font-size: 14.5px; color: var(--ink); }
+  .rows .lbl .n { display: block; font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+  .rows .val { font-size: 18px; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right; }
+  .rows .val .u { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+  .key { width: 10px; height: 10px; border-radius: 3px; flex: none; margin-top: 5px; }
+  .key.none { background: transparent; }
+
+  /* Zeitraum-Umschalter */
+  .seg { display: flex; gap: 2px; padding: 3px; background: var(--seg-bg); border-radius: 11px; margin-bottom: 12px; }
+  .seg button {
+    flex: 1 1 0; min-width: 0; border: 0; background: transparent; color: var(--ink-2);
+    font: inherit; font-size: 13px; line-height: 1.2; padding: 8px 2px; border-radius: 8px;
+    cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent;
   }
-  .period button:hover { background: var(--brand-soft); color: var(--ink); }
-  .period button[aria-pressed="true"] { background: var(--sel-bg); border-color: var(--sel-bg); color: var(--sel-ink); font-weight: 600; }
-  .period button:focus-visible { outline: 2px solid var(--ein); outline-offset: 2px; }
-  .since-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .since-item .k { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-2); }
-  .since-item .v { font-size: 20px; font-weight: 650; margin-top: 2px; }
-  .since-item .n { font-size: 12.5px; color: var(--muted); }
-  .key { width: 10px; height: 10px; border-radius: 3px; flex: none; }
-
-  dl.facts { margin: 14px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 24px; font-size: 14px; }
-  dl.facts dt { color: var(--ink-2); font-size: 13px; }
-  dl.facts dd { margin: 1px 0 0; font-weight: 600; }
-
-  /* Kennzahlen */
-  .section-head { margin: 4px 2px 12px; }
-  .section-head h2 { margin: 0; font-size: 18px; font-weight: 650; }
-  .section-head .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; }
-  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-  .tile { position: relative; padding: 16px 18px 16px 22px; }
-  .tile::before {
-    content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px;
-    border-radius: 0 4px 4px 0; background: var(--accent, var(--axis));
-  }
-  .tile .label { margin: 0; font-size: 13.5px; color: var(--ink-2); }
-  .tile .value { margin: 4px 0 0; font-size: 28px; font-weight: 650; line-height: 1.15; }
-  .tile .value .unit { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-left: 4px; }
-  .tile .note { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); }
+  .seg button.wide { flex-grow: 1.7; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--seg-on); color: var(--ink); font-weight: 650; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--border); }
+  .seg button:focus-visible { outline: 2px solid var(--ein); outline-offset: 1px; }
+  .range { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
+  .range b { color: var(--ink); font-weight: 650; font-size: 15px; margin-right: 4px; }
+  .range-note { display: block; }
 
   /* Diagramme */
-  .chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; margin-bottom: 10px; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--ink-2); margin: -4px 0 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; background: currentColor; }
+  .legend i { display: inline-block; width: 14px; height: 2px; border-radius: 2px; }
   .chart { position: relative; width: 100%; }
-  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
   .chart:focus-visible { outline: 2px solid var(--ein); outline-offset: 4px; border-radius: 6px; }
   .axis-text { fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
   .end-label { fill: var(--ink); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -166,188 +149,213 @@
     position: absolute; pointer-events: none; z-index: 5;
     background: var(--surface); color: var(--ink);
     border: 1px solid var(--border); border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
-    padding: 9px 12px; font-size: 13px; min-width: 150px;
-    opacity: 0; transition: opacity 0.12s ease;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+    padding: 8px 11px; font-size: 13px; min-width: 140px;
+    opacity: 0; transition: opacity 0.1s ease;
   }
   .tooltip.show { opacity: 1; }
-  .tooltip .tt-date { color: var(--ink-2); font-size: 12.5px; margin-bottom: 5px; }
-  .tooltip .tt-row { display: flex; align-items: center; gap: 8px; line-height: 1.6; }
+  .tooltip .tt-date { color: var(--ink-2); font-size: 12.5px; margin-bottom: 4px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 8px; line-height: 1.6; white-space: nowrap; }
   .tooltip .tt-row b { font-weight: 650; font-variant-numeric: tabular-nums; }
   .tooltip .tt-row span.n { color: var(--ink-2); }
   .tooltip .tt-key { width: 12px; height: 2px; border-radius: 2px; flex: none; }
-  .tooltip .tt-extra { color: var(--muted); font-size: 12px; margin-top: 3px; }
-  .charts-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .tooltip .tt-extra { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+  /* Anlage */
+  dl.facts { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; font-size: 14px; }
+  dl.facts dt { color: var(--muted); font-size: 12.5px; }
+  dl.facts dd { margin: 1px 0 0; font-weight: 600; }
 
   /* Tabelle */
-  .table-wrap { overflow-x: auto; margin-top: 12px; -webkit-overflow-scrolling: touch; }
+  .table-wrap { overflow-x: auto; margin: 0 -16px; padding: 0 16px; -webkit-overflow-scrolling: touch; }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th, td { padding: 8px 10px; text-align: right; white-space: nowrap; }
-  th:first-child, td:first-child, th:last-child, td:last-child { text-align: left; }
-  thead th { color: var(--ink-2); font-weight: 600; font-size: 12.5px; border-bottom: 1px solid var(--axis); }
+  th, td { padding: 9px 6px; text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  th:last-child, td:last-child { padding-right: 0; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 12px; line-height: 1.25; vertical-align: bottom; border-bottom: 1px solid var(--axis); white-space: normal; }
+  thead th small { display: block; font-weight: 500; }
   tbody td { border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
   tbody tr:last-child td { border-bottom: 0; }
-  tbody tr.latest td { background: var(--brand-soft); font-weight: 600; }
+  tbody tr.latest td { font-weight: 650; }
+  td .note { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; }
   td.muted { color: var(--muted); }
-
-  footer.notes { color: var(--ink-2); font-size: 13px; }
-  footer.notes p { margin: 0 0 6px; }
-  footer.notes strong { color: var(--ink); font-weight: 600; }
-
-  @media (max-width: 900px) {
-    .hero-card { grid-template-columns: 1fr; }
-    dl.facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .hero-card .since { margin-top: 18px; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--border); }
-    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .charts-2 { grid-template-columns: 1fr; }
+  tr.more { display: none; }
+  table.all tr.more { display: table-row; }
+  .opt { display: none; }
+  .btn-more {
+    display: block; width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px;
+    border: 1px solid var(--border); background: transparent; color: var(--ink);
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
   }
-  @media (max-width: 520px) {
+  .btn-more:hover { background: var(--brand-soft); }
+
+  /* Hinweise */
+  details.notes { padding: 0; }
+  details.notes summary { list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 600; font-size: 14.5px; display: flex; justify-content: space-between; align-items: center; }
+  details.notes summary::-webkit-details-marker { display: none; }
+  details.notes summary::after { content: "+"; font-size: 20px; line-height: 1; color: var(--muted); font-weight: 400; }
+  details.notes[open] summary::after { content: "–"; }
+  details.notes .body { padding: 0 16px 14px; color: var(--ink-2); font-size: 13.5px; }
+  details.notes .body p { margin: 0 0 8px; }
+  details.notes strong { color: var(--ink); font-weight: 600; }
+
+  @media (max-width: 559px) {
+    .range b { display: block; margin-bottom: 1px; }
+  }
+  /* Größere Bildschirme */
+  @media (min-width: 560px) {
+    .opt { display: table-cell; }
+    th, td { padding-left: 10px; padding-right: 10px; }
+    dl.facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 880px) {
     header.top { padding: 26px 0 22px; }
-    header.top h1 { font-size: 25px; }
-    .card { padding: 16px; border-radius: 12px; }
-    .hero-value { font-size: 46px; }
-    .since-grid { grid-template-columns: 1fr; gap: 10px; }
-    .tiles { gap: 12px; }
-    .tile .value { font-size: 23px; }
+    header.top h1 { font-size: 26px; }
+    main.wrap { padding-top: 20px; gap: 20px; }
+    .card { padding: 20px 22px; }
+    .table-wrap { margin: 0 -22px; padding: 0 22px; }
+    details.notes summary { padding: 16px 22px; }
+    details.notes .body { padding: 0 22px 16px; }
+    .duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+    .hero-value { font-size: 52px; }
+  }
+  @media (max-width: 879px) {
+    .duo { display: grid; gap: 16px; }
   }
 </style>
 </head>
 <body>
 <header class="top">
   <div class="wrap">
-    <p class="eyebrow">Solaranlage Kleingarten · PV-Tracking</p>
-    <h1>Gesamtauswertung seit dem Vollausbau</h1>
-    <p class="stand" id="stand"></p>
+    <h1>Solaranlage Kleingarten</h1>
+    <p id="stand"></p>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="card hero-card">
-    <div>
-      <p class="hero-label" id="hero-label">PV-Erzeugung gesamt</p>
-      <p class="hero-value"><span id="hero-value"></span><span class="unit">kWh</span></p>
-    </div>
-    <div class="since">
-      <div class="period" id="period" role="group" aria-label="Zeitraum wählen"></div>
-      <h3 id="since-title"></h3>
-      <p class="range" id="since-range"></p>
-      <div class="since-grid">
-        <div class="since-item">
-          <div class="k"><span class="key" style="background:var(--pv)"></span>PV-Erzeugung</div>
-          <div class="v" id="since-pv"></div>
-          <div class="n" id="since-pv-n"></div>
-        </div>
-        <div class="since-item">
-          <div class="k"><span class="key" style="background:var(--ein)"></span>Einspeisung (bil.)</div>
-          <div class="v" id="since-ein"></div>
-          <div class="n">Rückgang Hauptzähler</div>
-        </div>
-        <div class="since-item">
-          <div class="k"><span class="key" style="background:var(--verb)"></span>Gesamtverbrauch Garten</div>
-          <div class="v" id="since-verb"></div>
-          <div class="n">PV-Strom + Netzstrom</div>
-        </div>
+  <div class="duo">
+    <section class="card" aria-labelledby="h-gesamt">
+      <div class="card-head">
+        <h2 id="h-gesamt">Gesamt</h2>
+        <p class="sub" id="gesamt-sub"></p>
       </div>
-    </div>
-  </section>
+      <div class="hero">
+        <span class="hero-value" id="hero-value"></span><span class="hero-unit">kWh</span>
+        <span class="hero-label"><span class="key" style="background:var(--pv);margin-top:0"></span>PV-Erzeugung</span>
+      </div>
+      <ul class="rows">
+        <li>
+          <span class="lbl"><span class="key" style="background:var(--ein)"></span><span><span class="t">Einspeisung (bil.)</span><span class="n" id="g-ein-n"></span></span></span>
+          <span class="val"><span id="g-ein"></span><span class="u">kWh</span></span>
+        </li>
+        <li>
+          <span class="lbl"><span class="key" style="background:var(--verb)"></span><span><span class="t">Gesamtverbrauch Garten</span><span class="n" id="g-verb-n"></span></span></span>
+          <span class="val"><span id="g-verb"></span><span class="u">kWh</span></span>
+        </li>
+        <li>
+          <span class="lbl"><span class="key none"></span><span><span class="t">Wert des PV-Stroms</span><span class="n" id="g-wert-n"></span></span></span>
+          <span class="val"><span id="g-wert"></span><span class="u">€</span></span>
+        </li>
+        <li>
+          <span class="lbl"><span class="key none"></span><span><span class="t">Ø Ertrag pro Tag</span><span class="n" id="g-tag-n"></span></span></span>
+          <span class="val"><span id="g-tag"></span><span class="u">kWh</span></span>
+        </li>
+      </ul>
+    </section>
 
-  <section aria-labelledby="gesamt-title">
-    <div class="section-head">
-      <h2 id="gesamt-title">Gesamt seit Beginn</h2>
-      <p class="sub" id="gesamt-sub"></p>
-    </div>
-    <div class="tiles">
-      <div class="card tile" style="--accent:var(--brand)">
-        <p class="label">Wert des PV-Stroms</p>
-        <p class="value"><span id="t-wert"></span><span class="unit">€</span></p>
-        <p class="note" id="t-wert-n"></p>
+    <section class="card" aria-labelledby="h-zeitraum">
+      <div class="card-head">
+        <h2 id="h-zeitraum">Zeitraum</h2>
       </div>
-      <div class="card tile" style="--accent:var(--ein)">
-        <p class="label">Bilanzierte Einspeisung</p>
-        <p class="value"><span id="t-ein"></span><span class="unit">kWh</span></p>
-        <p class="note" id="t-ein-n"></p>
-      </div>
-      <div class="card tile" style="--accent:var(--verb)">
-        <p class="label">Gesamtverbrauch Garten</p>
-        <p class="value"><span id="t-verb"></span><span class="unit">kWh</span></p>
-        <p class="note" id="t-verb-n"></p>
-      </div>
-      <div class="card tile" style="--accent:var(--pv)">
-        <p class="label">Ø Ertrag pro Tag</p>
-        <p class="value"><span id="t-tag"></span><span class="unit">kWh</span></p>
-        <p class="note" id="t-tag-n"></p>
-      </div>
-    </div>
-  </section>
+      <div class="seg" id="period" role="group" aria-label="Zeitraum wählen"></div>
+      <p class="range"><b id="since-title"></b><span id="since-range"></span><span class="range-note" id="since-note"></span></p>
+      <ul class="rows">
+        <li>
+          <span class="lbl"><span class="key" style="background:var(--pv)"></span><span><span class="t">PV-Erzeugung</span><span class="n" id="since-pv-n"></span></span></span>
+          <span class="val" id="since-pv"></span>
+        </li>
+        <li>
+          <span class="lbl"><span class="key" style="background:var(--ein)"></span><span><span class="t">Einspeisung (bil.)</span><span class="n">Rückgang Hauptzähler</span></span></span>
+          <span class="val" id="since-ein"></span>
+        </li>
+        <li>
+          <span class="lbl"><span class="key" style="background:var(--verb)"></span><span><span class="t">Gesamtverbrauch Garten</span><span class="n">PV-Strom + Netzstrom</span></span></span>
+          <span class="val" id="since-verb"></span>
+        </li>
+      </ul>
+    </section>
+  </div>
 
   <section class="card">
-    <div class="chart-head">
-      <div>
-        <h2>Erzeugung und Bilanz seit Beginn</h2>
-        <p class="sub">Kumuliert in kWh – PV-Erzeugung teilt sich auf in bilanzierte Einspeisung und Gesamtverbrauch Garten</p>
-      </div>
-      <div class="legend" aria-hidden="true">
-        <span style="color:var(--pv)"><i></i><span style="color:var(--ink-2)">PV-Erzeugung</span></span>
-        <span style="color:var(--ein)"><i></i><span style="color:var(--ink-2)">Einspeisung (bil.)</span></span>
-        <span style="color:var(--verb)"><i></i><span style="color:var(--ink-2)">Gesamtverbrauch Garten</span></span>
-      </div>
+    <div class="card-head stack">
+      <h2>Verlauf seit Beginn</h2>
+      <p class="sub">Kumuliert in kWh</p>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i style="background:var(--pv)"></i>PV-Erzeugung</span>
+      <span><i style="background:var(--ein)"></i>Einspeisung (bil.)</span>
+      <span><i style="background:var(--verb)"></i>Gesamtverbrauch Garten</span>
     </div>
     <div class="chart" id="chart-bilanz" tabindex="0" role="img" aria-label="Liniendiagramm: kumulierte PV-Erzeugung, bilanzierte Einspeisung und Gesamtverbrauch im Garten. Alle Werte stehen auch im Messwertprotokoll."></div>
   </section>
 
-  <section class="charts-2">
-    <div class="card">
-      <div class="chart-head">
-        <div>
-          <h2>Ø Tagesertrag je Ableseintervall</h2>
-          <p class="sub">kWh pro Tag zwischen Ablesungen (Abstände unter 3 Tagen zusammengefasst)</p>
-        </div>
+  <div class="duo">
+    <section class="card">
+      <div class="card-head stack">
+        <h2>Ø Tagesertrag</h2>
+        <p class="sub">kWh pro Tag zwischen Ablesungen (mind. 3 Tage)</p>
       </div>
-      <div class="chart" id="chart-tag" tabindex="0" role="img" aria-label="Stufendiagramm: durchschnittlicher PV-Ertrag pro Tag in jedem Ableseintervall."></div>
-    </div>
-    <div class="card">
-      <div class="chart-head">
-        <div>
-          <h2>Hauptzählerstand</h2>
-          <p class="sub">kWh – der Zähler läuft bei Einspeisung rückwärts</p>
-        </div>
+      <div class="chart" id="chart-tag" tabindex="0" role="img" aria-label="Stufendiagramm: durchschnittlicher PV-Ertrag pro Tag je Ableseintervall."></div>
+    </section>
+    <section class="card">
+      <div class="card-head stack">
+        <h2>Hauptzählerstand</h2>
+        <p class="sub">kWh – läuft bei Einspeisung rückwärts</p>
       </div>
       <div class="chart" id="chart-hz" tabindex="0" role="img" aria-label="Liniendiagramm: Stand des Hauptzählers."></div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <section class="card">
-    <h2>Anlage &amp; Zählerstände</h2>
+  <section class="card" aria-labelledby="h-anlage">
+    <div class="card-head">
+      <h2 id="h-anlage">Anlage &amp; Zählerstände</h2>
+    </div>
     <dl class="facts" id="facts"></dl>
   </section>
 
-  <section class="card">
-    <h2>Messwertprotokoll</h2>
-    <p class="sub">Alle Ablesungen seit Beginn des Vollausbaus, neueste zuerst</p>
+  <section class="card" aria-labelledby="h-protokoll">
+    <div class="card-head">
+      <h2 id="h-protokoll">Messwertprotokoll</h2>
+      <p class="sub">neueste zuerst</p>
+    </div>
     <div class="table-wrap">
-      <table>
+      <table id="table">
         <thead>
           <tr>
             <th scope="col">Datum</th>
-            <th scope="col">Hauptzähler</th>
-            <th scope="col">PV-Zähler</th>
-            <th scope="col">PV kumuliert</th>
-            <th scope="col">Einspeisung bil.</th>
-            <th scope="col">Gesamtverbrauch</th>
-            <th scope="col">Bemerkung</th>
+            <th scope="col">Haupt&shy;zähler<small>kWh</small></th>
+            <th scope="col">PV-Zähler<small>kWh</small></th>
+            <th scope="col">PV gesamt<small>kWh</small></th>
+            <th scope="col" class="opt">Einspeisung<small>kWh</small></th>
+            <th scope="col" class="opt">Verbrauch<small>kWh</small></th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
+    <button type="button" class="btn-more" id="btn-more"></button>
   </section>
 
-  <footer class="card notes">
-    <p><strong>PV-Erzeugung</strong> = Summe der Zuwächse am PV-Zähler seit 31.07.2026 (der Zählerreset am 05.08.2026 ist berücksichtigt).</p>
-    <p><strong>Bilanzierte Einspeisung</strong> = Rückgang des Hauptzählers seit Beginn. <strong>Gesamtverbrauch Garten</strong> = PV-Erzeugung + Änderung des Hauptzählers (= PV-Erzeugung − bilanzierte Einspeisung), also der komplette Stromverbrauch im Garten aus PV-Strom und Netzstrom.</p>
-    <p id="note-preis"></p>
-    <p>Messwerte vor dem Vollausbau am 31.07.2026 wurden in einer Vorphase erfasst und sind nicht Bestandteil dieser Auswertung.</p>
-  </footer>
+  <details class="card notes">
+    <summary>Berechnung &amp; Hinweise</summary>
+    <div class="body">
+      <p><strong>PV-Erzeugung</strong> = Summe der Zuwächse am PV-Zähler seit 31.07.2026 (Zählerreset am 05.08.2026 berücksichtigt).</p>
+      <p><strong>Einspeisung (bil.)</strong> = Rückgang des Hauptzählers. <strong>Gesamtverbrauch Garten</strong> = PV-Erzeugung + Änderung des Hauptzählers, also der komplette Stromverbrauch im Garten aus PV-Strom und Netzstrom.</p>
+      <p id="note-preis"></p>
+      <p>Zeiträume zählen ab der letzten Ablesung zurück; liegt der Startpunkt zwischen zwei Ablesungen, wird linear interpoliert. Datumsangaben ohne Uhrzeit; bei mehreren Ablesungen am selben Tag zählt in den Diagrammen die letzte.</p>
+      <p>Messwerte vor dem Vollausbau am 31.07.2026 wurden in einer Vorphase erfasst und sind nicht Bestandteil dieser Auswertung.</p>
+    </div>
+  </details>
 </main>
 
 <script src="messwerte.js"></script>
@@ -376,6 +384,7 @@
   }
   var MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
   function plural(n, one, many) { return n === 1 ? one : many; }
+  function setText(id, s) { var e = document.getElementById(id); if (e) e.textContent = s; }
 
   /* ---------- Berechnung ---------- */
   var hz0 = null, offset = 0, base = null, lastKum = 0;
@@ -392,7 +401,7 @@
     };
   });
 
-  // Je Datum die letzte Ablesung mit Hauptzählerstand (Basis für Diagramme und Intervalle)
+  // Je Datum die letzte Ablesung mit Hauptzählerstand (Basis für Diagramme, Zeiträume und Intervalle)
   var byDay = [];
   rows.forEach(function (r) {
     if (r.hz == null) return;
@@ -414,7 +423,6 @@
       anchor = b;
     }
   }
-  // letztes Intervall zu kurz? Dann mit dem vorherigen zusammenlegen
   if (intervals.length > 1) {
     var li = intervals[intervals.length - 1];
     if (Math.round((li.b.t - li.a.t) / DAY) < MIN_TAGE) {
@@ -427,23 +435,29 @@
     return { t0: iv.a.t, t1: iv.b.t, days: d, kwh: kwh, v: kwh / d };
   });
 
-  /* ---------- Texte & Kennzahlen ---------- */
-  function setText(id, s) { var el = document.getElementById(id); if (el) el.textContent = s; }
-
-  setText("stand", "Stand: " + dateStr(last.t) + " · " + byDay.length + " Ablesetage · " + totalDays + " Tage seit Beginn");
-  setText("hero-label", "PV-Erzeugung seit " + dateStr(first.t));
+  /* ---------- Kopf & Gesamt ---------- */
+  setText("stand", "PV-Tracking · Stand " + dateStr(last.t) + " · " + rows.filter(function (r) { return r.hz != null; }).length + " Ablesungen");
+  setText("gesamt-sub", "seit " + dateStr(first.t) + " · " + totalDays + " Tage");
   setText("hero-value", fmt(last.kum, 2));
+  setText("g-ein", fmt(last.ein, 1));
+  setText("g-ein-n", fmt(last.ein / last.kum * 100, 0) + " % der Erzeugung");
+  setText("g-verb", fmt(last.verb, 2));
+  setText("g-verb-n", "PV-Strom + Netzstrom");
+  setText("g-wert", fmt(last.kum * PREIS, 2));
+  setText("g-wert-n", "bei " + fmt(PREIS, 2) + " €/kWh");
+  setText("g-tag", fmt(last.kum / totalDays, 2));
+  setText("g-tag-n", A.leistungKWp ? fmt(last.kum / A.leistungKWp, 0) + " kWh/kWp spezifischer Ertrag" : "");
+  setText("note-preis", "Wert des PV-Stroms = PV-Erzeugung × " + fmt(PREIS, 2) + " €/kWh.");
 
   /* ---------- Zeitraum-Auswahl ---------- */
   var PERIODS = [
-    { id: "last", label: "Seit letzter Ablesung" },
-    { id: "14", label: "14 Tage", days: 14 },
-    { id: "30", label: "30 Tage", days: 30 },
-    { id: "60", label: "60 Tage", days: 60 },
-    { id: "90", label: "90 Tage", days: 90 },
-    { id: "all", label: "Seit Beginn" }
+    { id: "last", label: "Ablesung", wide: true },
+    { id: "14", label: "14 T", days: 14 },
+    { id: "30", label: "30 T", days: 30 },
+    { id: "60", label: "60 T", days: 60 },
+    { id: "90", label: "90 T", days: 90 },
+    { id: "all", label: "Gesamt", wide: true }
   ];
-  // Kumulierte Werte zu einem Zeitpunkt (zwischen Ablesungen linear interpoliert)
   function valuesAt(t) {
     if (t <= first.t) return { kum: first.kum, ein: first.ein, verb: first.verb };
     for (var i = 1; i < byDay.length; i++) {
@@ -455,10 +469,16 @@
     }
     return { kum: last.kum, ein: last.ein, verb: last.verb };
   }
+  function valHTML(id, text, unit) {
+    var e = document.getElementById(id);
+    e.textContent = text;
+    var u = document.createElement("span"); u.className = "u"; u.textContent = unit;
+    e.appendChild(u);
+  }
   function renderPeriod(id) {
     var p = PERIODS.filter(function (x) { return x.id === id; })[0] || PERIODS[2];
     var startT, title, note = "";
-    if (p.id === "last") { startT = prev ? prev.t : first.t; title = "Seit der letzten Ablesung"; }
+    if (p.id === "last") { startT = prev ? prev.t : first.t; title = "Seit letzter Ablesung"; }
     else if (p.id === "all") { startT = first.t; title = "Seit Beginn"; }
     else {
       startT = last.t - p.days * DAY;
@@ -469,11 +489,12 @@
     var s = valuesAt(startT);
     var days = Math.round((last.t - startT) / DAY);
     setText("since-title", title);
-    setText("since-range", dateStr(startT, false) + " → " + dateStr(last.t) + " · " + days + " " + plural(days, "Tag", "Tage") + (note ? " · " + note : ""));
-    setText("since-pv", signed(last.kum - s.kum, 2) + " kWh");
+    setText("since-range", dateStr(startT, false) + " – " + dateStr(last.t) + " · " + days + " " + plural(days, "Tag", "Tage"));
+    setText("since-note", note);
+    valHTML("since-pv", signed(last.kum - s.kum, 2), "kWh");
     setText("since-pv-n", days > 0 ? "Ø " + fmt((last.kum - s.kum) / days, 1) + " kWh pro Tag" : "");
-    setText("since-ein", signed(last.ein - s.ein, 1) + " kWh");
-    setText("since-verb", signed(last.verb - s.verb, 2) + " kWh");
+    valHTML("since-ein", signed(last.ein - s.ein, 1), "kWh");
+    valHTML("since-verb", signed(last.verb - s.verb, 2), "kWh");
     Array.prototype.forEach.call(document.querySelectorAll("#period button"), function (btn) {
       btn.setAttribute("aria-pressed", btn.getAttribute("data-id") === p.id ? "true" : "false");
     });
@@ -484,23 +505,15 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.setAttribute("data-id", p.id);
+    if (p.wide) btn.className = "wide";
     btn.textContent = p.label;
+    btn.title = p.id === "last" ? "Seit letzter Ablesung" : p.id === "all" ? "Seit Beginn" : "Letzte " + p.days + " Tage";
     btn.addEventListener("click", function () { renderPeriod(p.id); });
     periodBox.appendChild(btn);
   });
   renderPeriod("30");
 
-  setText("gesamt-sub", dateStr(first.t) + " → " + dateStr(last.t) + " · " + totalDays + " Tage · unabhängig von der Zeitraum-Auswahl oben");
-  setText("t-wert", fmt(last.kum * PREIS, 2));
-  setText("t-wert-n", fmt(PREIS, 2) + " €/kWh × " + fmt(last.kum, 2) + " kWh");
-  setText("t-ein", fmt(last.ein, 1));
-  setText("t-ein-n", fmt(last.ein / last.kum * 100, 0) + " % der PV-Erzeugung");
-  setText("t-verb", fmt(last.verb, 2));
-  setText("t-verb-n", fmt(last.verb / last.kum * 100, 0) + " % der PV-Erzeugung");
-  setText("t-tag", fmt(last.kum / totalDays, 2));
-  setText("t-tag-n", A.leistungKWp ? fmt(last.kum / A.leistungKWp, 0) + " kWh/kWp spezifischer Ertrag" : "");
-  setText("note-preis", "Wert des PV-Stroms = PV-Erzeugung × " + fmt(PREIS, 2) + " €/kWh. Datumsangaben ohne Uhrzeit; bei mehreren Ablesungen am selben Tag zählt in den Diagrammen die letzte.");
-
+  /* ---------- Anlage ---------- */
   var facts = [
     ["Anlage", (A.module ? A.module + " = " : "") + fmt(A.leistungKWp, 2) + " kWp"],
     ["Wechselrichter", A.wechselrichter || "–"],
@@ -518,27 +531,42 @@
   });
 
   /* ---------- Tabelle ---------- */
+  var SHOW = 6;
   var tbody = document.getElementById("tbody");
-  rows.slice().reverse().forEach(function (r, idx) {
+  var desc = rows.slice().reverse();
+  desc.forEach(function (r, idx) {
     var tr = document.createElement("tr");
     if (idx === 0) tr.className = "latest";
-    var cells = [
-      dateStr(r.t),
-      r.hz == null ? "–" : fmt(r.hz, 1) + " kWh",
-      fmt(r.pv, 2) + " kWh",
-      fmt(r.kum, 2) + " kWh",
-      r.ein == null ? "–" : fmt(r.ein, 1) + " kWh",
-      r.verb == null ? "–" : fmt(r.verb, 2) + " kWh",
-      r.notiz || (idx === 0 ? "aktuell" : "")
-    ];
-    cells.forEach(function (c, ci) {
+    if (idx >= SHOW) tr.className = (tr.className + " more").trim();
+    var td0 = document.createElement("td");
+    td0.textContent = dateStr(r.t);
+    var noteText = r.notiz || (idx === 0 ? "aktuell" : "");
+    if (noteText) { var sp = document.createElement("span"); sp.className = "note"; sp.textContent = noteText; td0.appendChild(sp); }
+    tr.appendChild(td0);
+    [
+      [r.hz == null ? "–" : fmt(r.hz, 1), ""],
+      [fmt(r.pv, 2), ""],
+      [fmt(r.kum, 2), ""],
+      [r.ein == null ? "–" : fmt(r.ein, 1), "opt"],
+      [r.verb == null ? "–" : fmt(r.verb, 2), "opt"]
+    ].forEach(function (c) {
       var td = document.createElement("td");
-      td.textContent = c;
-      if (c === "–") td.className = "muted";
+      td.textContent = c[0];
+      var cls = c[1] + (c[0] === "–" ? " muted" : "");
+      if (cls.trim()) td.className = cls.trim();
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
   });
+  var table = document.getElementById("table"), btnMore = document.getElementById("btn-more");
+  function updateMore() {
+    var all = table.classList.contains("all");
+    btnMore.textContent = all ? "Weniger anzeigen" : "Alle " + desc.length + " Einträge anzeigen";
+    btnMore.setAttribute("aria-expanded", all ? "true" : "false");
+  }
+  if (desc.length <= SHOW) btnMore.hidden = true;
+  btnMore.addEventListener("click", function () { table.classList.toggle("all"); updateMore(); });
+  updateMore();
 
   /* ---------- Diagramme ---------- */
   var NS = "http://www.w3.org/2000/svg";
@@ -590,7 +618,7 @@
     var W = Math.max(280, container.clientWidth);
     var H = cfg.height || 260;
     var narrow = W < 480;
-    var m = { top: 14, right: cfg.endLabels ? (narrow ? 50 : 60) : 14, bottom: 28, left: narrow ? 46 : 54 };
+    var m = { top: 12, right: cfg.endLabels ? (narrow ? 52 : 60) : 12, bottom: 26, left: narrow ? 44 : 52 };
     var pw = W - m.left - m.right, ph = H - m.top - m.bottom;
 
     var vals = [];
@@ -750,7 +778,9 @@
     }
     hit.addEventListener("pointermove", function (e) { show(nearest(e)); });
     hit.addEventListener("pointerdown", function (e) { show(nearest(e)); });
-    hit.addEventListener("pointerleave", hide);
+    // Maus: beim Verlassen ausblenden; Touch: Tooltip bleibt, bis woanders hingetippt wird
+    hit.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hide(); });
+    container._hide = hide;
     container.onkeydown = function (e) {
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         e.preventDefault();
@@ -758,7 +788,12 @@
         show(Math.max(0, Math.min(stops.length - 1, n)));
       } else if (e.key === "Escape") hide();
     };
-    container.onfocus = function () { show(stops.length - 1); };
+    container.onfocus = function () {
+      // nur bei Tastatur-Fokus zum letzten Punkt springen (nicht bei Klick/Tippen)
+      var kb = true;
+      try { kb = container.matches(":focus-visible"); } catch (err) { kb = true; }
+      if (kb) show(stops.length - 1);
+    };
     container.onblur = hide;
   }
 
@@ -768,23 +803,29 @@
   var hzPts = byDay.map(function (r) { return { t: r.t, v: r.hz }; });
 
   function render() {
+    var small = window.innerWidth < 600;
     drawChart(document.getElementById("chart-bilanz"), {
-      height: 300, yZero: true, endLabels: true,
+      height: small ? 250 : 300, yZero: true, endLabels: true,
       series: [
         { name: "PV-Erzeugung", color: "var(--pv)", dec: 2, pts: pvPts },
         { name: "Einspeisung (bil.)", color: "var(--ein)", dec: 1, pts: einPts },
-        { name: "Gesamtverbrauch Garten", color: "var(--verb)", dec: 2, pts: verbPts }
+        { name: "Gesamtverbrauch", color: "var(--verb)", dec: 2, pts: verbPts }
       ]
     });
     drawChart(document.getElementById("chart-tag"), {
-      height: 240, yZero: true, endLabels: false, series: [], step: intervals
+      height: small ? 200 : 230, yZero: true, endLabels: false, series: [], step: intervals
     });
     drawChart(document.getElementById("chart-hz"), {
-      height: 240, yZero: false, endLabels: true,
+      height: small ? 200 : 230, yZero: false, endLabels: true,
       series: [{ name: "Hauptzähler", color: "var(--ein)", dec: 1, pts: hzPts }]
     });
   }
   render();
+  document.addEventListener("pointerdown", function (e) {
+    Array.prototype.forEach.call(document.querySelectorAll(".chart"), function (c) {
+      if (!c.contains(e.target) && c._hide) c._hide();
+    });
+  });
   var rt = null, lastW = window.innerWidth;
   window.addEventListener("resize", function () {
     if (window.innerWidth === lastW) return;
