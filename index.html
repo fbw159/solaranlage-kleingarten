@@ -138,6 +138,9 @@
   dl.facts dd { margin: 1px 0 0; font-weight: 600; }
 
   /* Kennzahlen */
+  .section-head { margin: 4px 2px 12px; }
+  .section-head h2 { margin: 0; font-size: 18px; font-weight: 650; }
+  .section-head .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; }
   .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
   .tile { position: relative; padding: 16px 18px 16px 22px; }
   .tile::before {
@@ -248,26 +251,32 @@
     </div>
   </section>
 
-  <section class="tiles" aria-label="Kennzahlen">
-    <div class="card tile" style="--accent:var(--brand)">
-      <p class="label">Wert des PV-Stroms</p>
-      <p class="value"><span id="t-wert"></span><span class="unit">€</span></p>
-      <p class="note" id="t-wert-n"></p>
+  <section aria-labelledby="gesamt-title">
+    <div class="section-head">
+      <h2 id="gesamt-title">Gesamt seit Beginn</h2>
+      <p class="sub" id="gesamt-sub"></p>
     </div>
-    <div class="card tile" style="--accent:var(--ein)">
-      <p class="label">Bilanzierte Einspeisung</p>
-      <p class="value"><span id="t-ein"></span><span class="unit">kWh</span></p>
-      <p class="note" id="t-ein-n"></p>
-    </div>
-    <div class="card tile" style="--accent:var(--verb)">
-      <p class="label">Gesamtverbrauch Garten</p>
-      <p class="value"><span id="t-verb"></span><span class="unit">kWh</span></p>
-      <p class="note" id="t-verb-n"></p>
-    </div>
-    <div class="card tile" style="--accent:var(--pv)">
-      <p class="label">Ø Ertrag pro Tag</p>
-      <p class="value"><span id="t-tag"></span><span class="unit">kWh</span></p>
-      <p class="note" id="t-tag-n"></p>
+    <div class="tiles">
+      <div class="card tile" style="--accent:var(--brand)">
+        <p class="label">Wert des PV-Stroms</p>
+        <p class="value"><span id="t-wert"></span><span class="unit">€</span></p>
+        <p class="note" id="t-wert-n"></p>
+      </div>
+      <div class="card tile" style="--accent:var(--ein)">
+        <p class="label">Bilanzierte Einspeisung</p>
+        <p class="value"><span id="t-ein"></span><span class="unit">kWh</span></p>
+        <p class="note" id="t-ein-n"></p>
+      </div>
+      <div class="card tile" style="--accent:var(--verb)">
+        <p class="label">Gesamtverbrauch Garten</p>
+        <p class="value"><span id="t-verb"></span><span class="unit">kWh</span></p>
+        <p class="note" id="t-verb-n"></p>
+      </div>
+      <div class="card tile" style="--accent:var(--pv)">
+        <p class="label">Ø Ertrag pro Tag</p>
+        <p class="value"><span id="t-tag"></span><span class="unit">kWh</span></p>
+        <p class="note" id="t-tag-n"></p>
+      </div>
     </div>
   </section>
 
@@ -481,6 +490,7 @@
   });
   renderPeriod("30");
 
+  setText("gesamt-sub", dateStr(first.t) + " → " + dateStr(last.t) + " · " + totalDays + " Tage · unabhängig von der Zeitraum-Auswahl oben");
   setText("t-wert", fmt(last.kum * PREIS, 2));
   setText("t-wert-n", fmt(PREIS, 2) + " €/kWh × " + fmt(last.kum, 2) + " kWh");
   setText("t-ein", fmt(last.ein, 1));
