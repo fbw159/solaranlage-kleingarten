@@ -275,7 +275,7 @@
           <span class="val" id="since-pv"></span>
         </li>
         <li>
-          <span class="lbl"><span class="key" style="background:var(--ein)"></span><span><span class="t">Einspeisung (bil.)</span><span class="n">Rückgang Hauptzähler</span></span></span>
+          <span class="lbl"><span class="key" style="background:var(--ein)"></span><span><span class="t">Einspeisung (bil.)</span><span class="n" id="since-ein-n">Rückgang Hauptzähler</span></span></span>
           <span class="val" id="since-ein"></span>
         </li>
         <li>
@@ -494,6 +494,7 @@
     valHTML("since-pv", signed(last.kum - s.kum, 2), "kWh");
     setText("since-pv-n", days > 0 ? "Ø " + fmt((last.kum - s.kum) / days, 1) + " kWh pro Tag" : "");
     valHTML("since-ein", signed(last.ein - s.ein, 1), "kWh");
+    setText("since-ein-n", last.ein - s.ein < 0 ? "Hauptzähler gestiegen: mehr Netzbezug als Einspeisung" : "Rückgang Hauptzähler");
     valHTML("since-verb", signed(last.verb - s.verb, 2), "kWh");
     Array.prototype.forEach.call(document.querySelectorAll("#period button"), function (btn) {
       btn.setAttribute("aria-pressed", btn.getAttribute("data-id") === p.id ? "true" : "false");
