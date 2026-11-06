@@ -4,8 +4,9 @@ Dashboard zur PV-Anlage im Kleingarten (4 × 465 Wp = 1,86 kWp, Hoymiles HMS-160
 
 **Live:** https://fbw159.github.io/solaranlage-kleingarten/
 
-- `index.html` – Dashboard (Kennzahlen, Diagramme, Messwertprotokoll)
-- `messwerte.js` – alle Ablesungen von Hauptzähler und PV-Zähler; neue Ablesung als neue Zeile unten anfügen
+- `index.html` – Dashboard (Eingabe, Kennzahlen, Diagramme, Messwertprotokoll)
+- `messwerte.json` – alle Ablesungen von Hauptzähler und PV-Zähler (eine Ablesung pro Zeile)
+- `relay/worker.js` – Cloudflare Worker `solaranlage-kleingarten`: liefert `messwerte.json` frisch aus GitHub (`/daten`) und speichert neue Ablesungen (`/eintrag`, `/loeschen`) als Commit. Schreiben nur mit Zugangscode aus dem Link.
 
 Berechnung:
 

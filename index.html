@@ -6,6 +6,7 @@
 <title>Solaranlage Kleingarten</title>
 <meta name="description" content="PV-Tracking der Solaranlage im Kleingarten: Erzeugung, bilanzierte Einspeisung und Gesamtverbrauch seit dem Vollausbau am 31.07.2026.">
 <meta name="theme-color" content="#0f4c3a">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f4c3a'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23f5c84c'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -27,6 +28,9 @@
     --pv: #1baf7a;
     --ein: #2a78d6;
     --verb: #eb6834;
+    --warn-ink: #9a5a00;
+    --btn: #0f4c3a;
+    --danger: #c43c3c;
     --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 4px 16px rgba(11, 11, 11, 0.04);
   }
   @media (prefers-color-scheme: dark) {
@@ -47,6 +51,9 @@
       --pv: #199e70;
       --ein: #3987e5;
       --verb: #d95926;
+      --warn-ink: #f2b84b;
+      --btn: #1d7a5a;
+      --danger: #c94a4a;
       --shadow: none;
     }
   }
@@ -67,6 +74,9 @@
     --pv: #199e70;
     --ein: #3987e5;
     --verb: #d95926;
+    --warn-ink: #f2b84b;
+    --btn: #1d7a5a;
+    --danger: #c94a4a;
     --shadow: none;
   }
 
@@ -202,11 +212,60 @@
   @media (max-width: 559px) {
     .range b { display: block; margin-bottom: 1px; }
   }
+
+  /* Eingabe */
+  .eingabe .card-head { margin-bottom: 10px; }
+  .felder { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  .feld { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .feld.datum { grid-column: 1 / -1; }
+  .feld > span { font-size: 13px; color: var(--ink-2); }
+  .feld small { color: var(--muted); font-size: 12px; }
+  .feld input {
+    font: inherit; font-size: 17px; width: 100%; min-width: 0; padding: 10px 12px;
+    border: 1px solid var(--axis); border-radius: 10px; background: var(--page); color: var(--ink);
+    font-variant-numeric: tabular-nums; -webkit-appearance: none; appearance: none;
+  }
+  .feld input[type="date"] { min-height: 46px; }
+  .feld input:focus { outline: 2px solid var(--ein); outline-offset: 0; border-color: transparent; }
+  .feld input::placeholder { color: var(--muted); opacity: 0.8; }
+  .check { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--brand); }
+  .vorschau { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-2); }
+  .vorschau:empty { display: none; }
+  .vorschau p { margin: 2px 0; }
+  .vorschau p.kopf { color: var(--muted); font-size: 12.5px; }
+  .vorschau p.warn { color: var(--warn-ink); font-weight: 600; }
+  .vorschau p.info { color: var(--muted); }
+  .btn-primary {
+    display: block; width: 100%; margin-top: 12px; padding: 12px; border: 0; border-radius: 11px;
+    background: var(--btn); color: #fff; font: inherit; font-size: 16px; font-weight: 650; cursor: pointer;
+  }
+  .btn-primary:disabled { opacity: 0.45; cursor: default; }
+  .letzte { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--grid); font-size: 12.5px; color: var(--muted); }
+  .letzte button { flex: none; font: inherit; font-size: 13px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--ink-2); cursor: pointer; }
+  .letzte button.scharf { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+  .meldung {
+    position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+    max-width: min(92vw, 460px); padding: 11px 16px; border-radius: 12px; z-index: 20;
+    background: var(--ink); color: var(--surface); font-size: 14px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+    opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .meldung.da { opacity: 1; transform: translate(-50%, 0); }
+  .meldung.fehler { background: var(--danger); color: #fff; }
   /* Größere Bildschirme */
   @media (min-width: 560px) {
     .opt { display: table-cell; }
     th, td { padding-left: 10px; padding-right: 10px; }
     dl.facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 720px) {
+    .felder { grid-template-columns: 1.1fr 1fr 1fr; }
+    .feld.datum { grid-column: auto; }
+    .eingabe form { display: grid; grid-template-columns: 1fr auto; gap: 0 16px; align-items: end; }
+    .eingabe .felder { grid-column: 1 / -1; }
+    .eingabe .btn-primary { grid-column: 2; grid-row: 2; width: auto; padding: 11px 28px; margin-top: 12px; }
+    .eingabe .check { grid-column: 1; grid-row: 2; }
+    .eingabe .vorschau { grid-column: 1 / -1; }
   }
   @media (min-width: 880px) {
     header.top { padding: 26px 0 22px; }
@@ -233,6 +292,23 @@
 </header>
 
 <main class="wrap">
+  <section class="card eingabe" id="eingabe" hidden aria-labelledby="h-eingabe">
+    <div class="card-head">
+      <h2 id="h-eingabe">Ablesung eintragen</h2>
+      <p class="sub">wird direkt im Repo gespeichert</p>
+    </div>
+    <form id="form" novalidate autocomplete="off">
+      <div class="felder">
+        <label class="feld datum"><span>Datum</span><input type="date" id="f-datum" required></label>
+        <label class="feld"><span>Hauptzähler <small>kWh</small></span><input id="f-hz" type="text" inputmode="decimal" enterkeyhint="next" spellcheck="false" required></label>
+        <label class="feld"><span>PV-Zähler <small>kWh</small></span><input id="f-pv" type="text" inputmode="decimal" enterkeyhint="done" spellcheck="false" required></label>
+      </div>
+      <label class="check"><input type="checkbox" id="f-reset"> PV-Zähler wurde zurückgesetzt</label>
+      <div class="vorschau" id="f-vorschau" aria-live="polite"></div>
+      <button type="submit" class="btn-primary" id="f-speichern" disabled>Speichern</button>
+    </form>
+    <div class="letzte" id="letzte" hidden><span id="letzte-text"></span><button type="button" id="btn-loeschen">Löschen</button></div>
+  </section>
   <div class="duo">
     <section class="card" aria-labelledby="h-gesamt">
       <div class="card-head">
@@ -353,19 +429,31 @@
       <p><strong>Einspeisung (bil.)</strong> = Rückgang des Hauptzählers. <strong>Gesamtverbrauch Garten</strong> = PV-Erzeugung + Änderung des Hauptzählers, also der komplette Stromverbrauch im Garten aus PV-Strom und Netzstrom.</p>
       <p id="note-preis"></p>
       <p>Zeiträume zählen ab der letzten Ablesung zurück; liegt der Startpunkt zwischen zwei Ablesungen, wird linear interpoliert. Datumsangaben ohne Uhrzeit; bei mehreren Ablesungen am selben Tag zählt in den Diagrammen die letzte.</p>
+      <p>Neue Ablesungen lassen sich über den Link mit Zugangscode direkt hier eintragen; jede Eingabe wird ein Commit in <code>messwerte.json</code>.</p>
       <p>Messwerte vor dem Vollausbau am 31.07.2026 wurden in einer Vorphase erfasst und sind nicht Bestandteil dieser Auswertung.</p>
     </div>
   </details>
 </main>
+<div class="meldung" id="meldung" role="status" aria-live="polite"></div>
 
-<script src="messwerte.js"></script>
 <script>
 (function () {
   "use strict";
-  var A = window.PV_ANLAGE || {};
-  var RAW = (window.PV_MESSWERTE || []).slice();
+  // Speicher: Cloudflare-Worker, der messwerte.json in diesem Repo liest (öffentlich) und schreibt (nur mit Zugangscode)
+  var API = "https://solaranlage-kleingarten.fbw159.workers.dev";
   var DAY = 864e5;
-  var PREIS = A.strompreis || 0.27;
+  var S_CODE = "pv-zugang";
+  var A = {}, RAW = [], PREIS = 0.27;
+  var rows = [], byDay = [], first = null, last = null, prev = null, totalDays = 1, intervals = [], desc = [];
+  var periode = "30";
+  var SHOW = 6;
+  var table = document.getElementById("table"), btnMore = document.getElementById("btn-more");
+  function updateMore() {
+    var all = table.classList.contains("all");
+    btnMore.textContent = all ? "Weniger anzeigen" : "Alle " + desc.length + " Einträge anzeigen";
+    btnMore.setAttribute("aria-expanded", all ? "true" : "false");
+  }
+  btnMore.addEventListener("click", function () { table.classList.toggle("all"); updateMore(); });
 
   /* ---------- Formatierung ---------- */
   var nfCache = {};
@@ -386,9 +474,13 @@
   function plural(n, one, many) { return n === 1 ? one : many; }
   function setText(id, s) { var e = document.getElementById(id); if (e) e.textContent = s; }
 
-  /* ---------- Berechnung ---------- */
+  /* ---------- Aufbau aus den Daten (läuft nach jedem Laden/Speichern neu) ---------- */
+  function aufbauen(daten) {
+  A = (daten && daten.anlage) || {};
+  RAW = ((daten && daten.messwerte) || []).slice();
+  PREIS = A.strompreis || 0.27;
   var hz0 = null, offset = 0, base = null, lastKum = 0;
-  var rows = RAW.map(function (r, i) {
+  rows = RAW.map(function (r, i) {
     if (base === null) base = r.pv;
     if (r.reset) { offset = lastKum; base = r.pv; }
     var kum = offset + (r.pv - base);
@@ -396,24 +488,24 @@
     if (hz0 === null && r.hz != null) hz0 = r.hz;
     var ein = r.hz == null ? null : hz0 - r.hz;
     return {
-      i: i, datum: r.datum, t: parseDay(r.datum), hz: r.hz, pv: r.pv, reset: !!r.reset,
+      i: i, id: r.id, datum: r.datum, t: parseDay(r.datum), hz: r.hz, pv: r.pv, reset: !!r.reset,
       notiz: r.notiz || "", kum: kum, ein: ein, verb: ein == null ? null : kum - ein
     };
   });
 
   // Je Datum die letzte Ablesung mit Hauptzählerstand (Basis für Diagramme, Zeiträume und Intervalle)
-  var byDay = [];
+  byDay = [];
   rows.forEach(function (r) {
     if (r.hz == null) return;
     if (byDay.length && byDay[byDay.length - 1].t === r.t) byDay[byDay.length - 1] = r;
     else byDay.push(r);
   });
-  var first = byDay[0], last = byDay[byDay.length - 1], prev = byDay[byDay.length - 2];
-  var totalDays = Math.round((last.t - first.t) / DAY);
+  first = byDay[0]; last = byDay[byDay.length - 1]; prev = byDay[byDay.length - 2];
+  totalDays = Math.max(1, Math.round((last.t - first.t) / DAY));
 
   // Intervalle für den Ø Tagesertrag: kurze Abstände (< MIN_TAGE) werden mit der nächsten Ablesung zusammengefasst
   var MIN_TAGE = 3;
-  var intervals = [];
+  intervals = [];
   var anchor = byDay[0];
   for (var k = 1; k < byDay.length; k++) {
     var b = byDay[k];
@@ -501,6 +593,7 @@
     });
   }
   var periodBox = document.getElementById("period");
+  periodBox.textContent = "";
   PERIODS.forEach(function (p) {
     if (p.id === "last" && !prev) return;
     var btn = document.createElement("button");
@@ -509,10 +602,10 @@
     if (p.wide) btn.className = "wide";
     btn.textContent = p.label;
     btn.title = p.id === "last" ? "Seit letzter Ablesung" : p.id === "all" ? "Seit Beginn" : "Letzte " + p.days + " Tage";
-    btn.addEventListener("click", function () { renderPeriod(p.id); });
+    btn.addEventListener("click", function () { periode = p.id; renderPeriod(p.id); });
     periodBox.appendChild(btn);
   });
-  renderPeriod("30");
+  renderPeriod(periode);
 
   /* ---------- Anlage ---------- */
   var facts = [
@@ -524,6 +617,7 @@
     ["PV-Zähler", fmt(last.pv, 2) + " kWh"]
   ];
   var dl = document.getElementById("facts");
+  dl.textContent = "";
   facts.forEach(function (f) {
     var item = document.createElement("div");
     var dt = document.createElement("dt"); dt.textContent = f[0];
@@ -532,9 +626,9 @@
   });
 
   /* ---------- Tabelle ---------- */
-  var SHOW = 6;
   var tbody = document.getElementById("tbody");
-  var desc = rows.slice().reverse();
+  tbody.textContent = "";
+  desc = rows.slice().reverse();
   desc.forEach(function (r, idx) {
     var tr = document.createElement("tr");
     if (idx === 0) tr.className = "latest";
@@ -559,15 +653,12 @@
     });
     tbody.appendChild(tr);
   });
-  var table = document.getElementById("table"), btnMore = document.getElementById("btn-more");
-  function updateMore() {
-    var all = table.classList.contains("all");
-    btnMore.textContent = all ? "Weniger anzeigen" : "Alle " + desc.length + " Einträge anzeigen";
-    btnMore.setAttribute("aria-expanded", all ? "true" : "false");
-  }
-  if (desc.length <= SHOW) btnMore.hidden = true;
-  btnMore.addEventListener("click", function () { table.classList.toggle("all"); updateMore(); });
+  btnMore.hidden = desc.length <= SHOW;
   updateMore();
+
+  eingabeAktualisieren();
+  render();
+  }
 
   /* ---------- Diagramme ---------- */
   var NS = "http://www.w3.org/2000/svg";
@@ -608,7 +699,7 @@
     return cands[cands.length - 1];
   }
 
-  var tMin = first.t, tMax = last.t;
+  var tMin = 0, tMax = 1;
 
   /*
    * cfg: { series: [{ name, color, dec, pts: [{t, v}] }], step: intervals|null,
@@ -798,12 +889,13 @@
     container.onblur = hide;
   }
 
-  var pvPts = byDay.map(function (r) { return { t: r.t, v: r.kum }; });
-  var einPts = byDay.map(function (r) { return { t: r.t, v: r.ein }; });
-  var verbPts = byDay.map(function (r) { return { t: r.t, v: r.verb }; });
-  var hzPts = byDay.map(function (r) { return { t: r.t, v: r.hz }; });
-
   function render() {
+    if (!first || !last) return;
+    tMin = first.t; tMax = last.t;
+    var pvPts = byDay.map(function (r) { return { t: r.t, v: r.kum }; });
+    var einPts = byDay.map(function (r) { return { t: r.t, v: r.ein }; });
+    var verbPts = byDay.map(function (r) { return { t: r.t, v: r.verb }; });
+    var hzPts = byDay.map(function (r) { return { t: r.t, v: r.hz }; });
     var small = window.innerWidth < 600;
     drawChart(document.getElementById("chart-bilanz"), {
       height: small ? 250 : 300, yZero: true, endLabels: true,
@@ -821,7 +913,6 @@
       series: [{ name: "Hauptzähler", color: "var(--ein)", dec: 1, pts: hzPts }]
     });
   }
-  render();
   document.addEventListener("pointerdown", function (e) {
     Array.prototype.forEach.call(document.querySelectorAll(".chart"), function (c) {
       if (!c.contains(e.target) && c._hide) c._hide();
@@ -833,6 +924,232 @@
     lastW = window.innerWidth;
     clearTimeout(rt); rt = setTimeout(render, 120);
   });
+
+  /* ---------- Speicher & Zugang ---------- */
+  function $(id) { return document.getElementById(id); }
+  function lesen(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function merken(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function codeAus(text) {
+    var m = String(text || "").match(/(?:^|[#&?])k=([A-Za-z0-9_-]{12,})/);
+    return m ? m[1] : null;
+  }
+  function codeInAdresse(c) {
+    try { history.replaceState(null, "", location.pathname + location.search + (c ? "#k=" + c : "")); } catch (e) {}
+  }
+  var code = codeAus(location.hash.slice(1));
+  if (code) merken(S_CODE, code);
+  else { code = lesen(S_CODE); if (code) codeInAdresse(code); }
+
+  function api(pfad, body, mitCode) {
+    var h = {};
+    if (mitCode) h["X-Zugang"] = code || "";
+    if (body) h["Content-Type"] = "application/json";
+    var ctrl = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : 0;
+    return fetch(API + pfad, {
+      method: body ? "POST" : "GET", headers: h, cache: "no-store",
+      body: body ? JSON.stringify(body) : undefined, signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      clearTimeout(timer);
+      return r.json().catch(function () { return null; }).then(function (j) {
+        if (!r.ok) { var e = new Error((j && j.fehler) || ("Fehler " + r.status + ".")); e.status = r.status; throw e; }
+        return j;
+      });
+    }, function (err) { clearTimeout(timer); throw err; });
+  }
+
+  var meldungTimer = 0;
+  function meldung(text, art) {
+    var m = $("meldung");
+    m.textContent = text;
+    m.className = "meldung da" + (art === "fehler" ? " fehler" : "");
+    clearTimeout(meldungTimer);
+    meldungTimer = setTimeout(function () { m.className = m.className.replace(" da", ""); }, art === "fehler" ? 7000 : 3500);
+  }
+
+  /* ---------- Daten laden ---------- */
+  var gezeigt = null, frisch = false;
+  function zeigen(d) {
+    if (!d || !Array.isArray(d.messwerte) || !d.messwerte.length) return;
+    var s = JSON.stringify(d);
+    if (s === gezeigt) return;
+    gezeigt = s;
+    aufbauen(d);
+  }
+  function laden() {
+    // Pages-Kopie kommt schnell, der Worker liefert den ganz aktuellen Stand direkt aus GitHub
+    fetch("messwerte.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (!frisch) zeigen(d); }, function () {});
+    return api("/daten").then(function (d) { frisch = true; zeigen(d); }, function () {
+      if (!gezeigt) setText("stand", "PV-Tracking · Daten konnten nicht geladen werden");
+    });
+  }
+
+  /* ---------- Eingabe ---------- */
+  var eingabe = $("eingabe"), form = $("form"), fDatum = $("f-datum"), fHz = $("f-hz"), fPv = $("f-pv"), fReset = $("f-reset");
+  var btnSpeichern = $("f-speichern"), btnLoeschen = $("btn-loeschen");
+  var beschaeftigt = false, loeschenScharf = 0;
+
+  function heute() {
+    var n = new Date();
+    return n.getFullYear() + "-" + pad(n.getMonth() + 1) + "-" + pad(n.getDate());
+  }
+  // "11.012,2" / "11012,2" / "11012.2" -> 11012.2
+  function zahlAus(text) {
+    var t = String(text || "").replace(/\s|kwh/gi, "");
+    if (!t) return null;
+    if (t.indexOf(",") >= 0) t = t.replace(/\./g, "").replace(",", ".");
+    else if (/^\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, "");
+    if (!/^\d+(\.\d+)?$/.test(t)) return NaN;
+    return Number(t);
+  }
+  function letzterEintrag() { return RAW.length ? RAW[RAW.length - 1] : null; }
+  function letzterMitHz() {
+    for (var i = RAW.length - 1; i >= 0; i--) if (RAW[i].hz != null) return RAW[i];
+    return null;
+  }
+
+  function pruefen() {
+    var box = $("f-vorschau");
+    box.textContent = "";
+    box.className = "vorschau";
+    var hz = zahlAus(fHz.value), pv = zahlAus(fPv.value), datum = fDatum.value;
+    var ok = !!datum && hz != null && pv != null && !isNaN(hz) && !isNaN(pv);
+    var hinweise = [];
+    function zeile(text, art) {
+      var p = document.createElement("p");
+      p.textContent = text;
+      if (art) p.className = art;
+      box.appendChild(p);
+    }
+    if (fHz.value && (hz == null || isNaN(hz))) { zeile("Hauptzähler: bitte eine Zahl eintragen, z. B. 11012,2", "warn"); ok = false; }
+    if (fPv.value && (pv == null || isNaN(pv))) { zeile("PV-Zähler: bitte eine Zahl eintragen, z. B. 377,4", "warn"); ok = false; }
+    var lz = letzterMitHz(), le = letzterEintrag();
+    if (datum && datum > heute()) { zeile("Das Datum liegt in der Zukunft.", "warn"); ok = false; }
+    if (datum && first && datum < RAW[0].datum) { zeile("Das Datum liegt vor Beginn der Aufzeichnung.", "warn"); ok = false; }
+    if (ok && lz && le) {
+      var tage = Math.round((parseDay(datum) - parseDay(lz.datum)) / DAY);
+      if (datum < le.datum) zeile("Liegt vor der neuesten Ablesung (" + dateStr(parseDay(le.datum)) + ") und wird passend einsortiert.", "info");
+      else if (datum === le.datum) zeile("Am " + dateStr(parseDay(datum)) + " gibt es schon eine Ablesung – diese kommt dazu.", "info");
+      if (!fReset.checked && pv < le.pv) {
+        zeile("Der PV-Zähler ist kleiner als zuletzt (" + fmt(le.pv, 1) + " kWh). Wurde er zurückgesetzt? Dann bitte das Häkchen setzen.", "warn");
+        ok = false;
+      } else if (datum >= le.datum) {
+        var dPv = fReset.checked ? pv : pv - le.pv;
+        var dHz = hz - lz.hz;
+        var t = Math.max(tage, 1);
+        zeile("Seit " + dateStr(parseDay(lz.datum), tage > 300) + (tage > 0 ? " (" + tage + " " + plural(tage, "Tag", "Tage") + ")" : "") + ":", "kopf");
+        zeile("PV-Erzeugung " + signed(dPv, 1) + " kWh · Hauptzähler " + signed(dHz, 1) + " kWh · Gesamtverbrauch " + signed(dPv + dHz, 1) + " kWh");
+        if (dPv / t > 13) hinweise.push("Mehr PV-Strom als die Anlage an einem Tag schaffen kann – bitte den PV-Zähler prüfen.");
+        if (Math.abs(dHz) / t > 15) hinweise.push("Ungewöhnlich große Änderung am Hauptzähler – bitte prüfen.");
+        if (dPv + dHz < -0.5) hinweise.push("Der Verbrauch wäre negativ – passen die beiden Werte zusammen?");
+        hinweise.forEach(function (h) { zeile(h, "warn"); });
+      }
+    }
+    btnSpeichern.disabled = !ok || beschaeftigt;
+    return ok;
+  }
+  [fDatum, fHz, fPv, fReset].forEach(function (f) { f.addEventListener("input", pruefen); f.addEventListener("change", pruefen); });
+
+  function eingabeAktualisieren() {
+    var lz = letzterMitHz(), le = letzterEintrag();
+    if (lz) { fHz.placeholder = fmt(lz.hz, 1); }
+    if (le) { fPv.placeholder = fmt(le.pv, 1); }
+    if (!fDatum.value) fDatum.value = heute();
+    fDatum.max = heute();
+    if (le) {
+      setText("letzte-text", "Neueste Ablesung: " + dateStr(parseDay(le.datum)) + " · Hauptzähler " + (le.hz == null ? "–" : fmt(le.hz, 1)) + " · PV-Zähler " + fmt(le.pv, 1));
+      $("letzte").hidden = RAW.length < 2;
+    }
+    entschaerfen();
+    pruefen();
+  }
+
+  function zugangPruefen() {
+    if (!code) { eingabe.hidden = true; return; }
+    api("/zugang", null, true).then(function () { eingabe.hidden = false; }, function (e) {
+      if (e && e.status === 401) {
+        merken(S_CODE, null); code = null; codeInAdresse(null);
+        eingabe.hidden = true;
+        meldung("Der Zugangscode im Link stimmt nicht – Eintragen ist ausgeschaltet.", "fehler");
+      } else {
+        eingabe.hidden = false; // offline o. Ä.: Formular zeigen, Speichern meldet dann den Fehler
+      }
+    });
+  }
+
+  function fehlerText(e) {
+    if (e && e.status === 401) return "Zugangscode stimmt nicht.";
+    if (e && e.status) return e.message;
+    return "Keine Verbindung zum Speicher. Bitte gleich nochmal versuchen.";
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (beschaeftigt || !pruefen()) return;
+    beschaeftigt = true;
+    btnSpeichern.disabled = true;
+    btnSpeichern.textContent = "Speichert …";
+    var body = { datum: fDatum.value, hz: zahlAus(fHz.value), pv: zahlAus(fPv.value) };
+    if (fReset.checked) body.reset = true;
+    api("/eintrag", body, true).then(function (d) {
+      frisch = true;
+      fHz.value = ""; fPv.value = ""; fReset.checked = false; fDatum.value = heute();
+      zeigen(d);
+      meldung("Gespeichert – Ablesung vom " + dateStr(parseDay(body.datum)) + " ist eingetragen.");
+    }, function (e) {
+      if (e && e.status === 401) { merken(S_CODE, null); code = null; codeInAdresse(null); eingabe.hidden = true; }
+      meldung("Nicht gespeichert: " + fehlerText(e), "fehler");
+    }).then(function () {
+      beschaeftigt = false;
+      btnSpeichern.textContent = "Speichern";
+      pruefen();
+    });
+  });
+
+  function entschaerfen() {
+    clearTimeout(loeschenScharf); loeschenScharf = 0;
+    btnLoeschen.textContent = "Löschen";
+    btnLoeschen.classList.remove("scharf");
+  }
+  btnLoeschen.addEventListener("click", function () {
+    var le = letzterEintrag();
+    if (!le || beschaeftigt) return;
+    if (!loeschenScharf) {
+      btnLoeschen.textContent = "Wirklich löschen?";
+      btnLoeschen.classList.add("scharf");
+      loeschenScharf = setTimeout(entschaerfen, 5000);
+      return;
+    }
+    entschaerfen();
+    beschaeftigt = true;
+    btnLoeschen.disabled = true;
+    api("/loeschen", { id: le.id }, true).then(function (d) {
+      frisch = true;
+      zeigen(d);
+      meldung("Ablesung vom " + dateStr(parseDay(le.datum)) + " gelöscht.");
+    }, function (e) {
+      meldung("Nicht gelöscht: " + fehlerText(e), "fehler");
+    }).then(function () { beschaeftigt = false; btnLoeschen.disabled = false; pruefen(); });
+  });
+
+  // Link mit Code geöffnet, während die Seite schon offen ist
+  window.addEventListener("hashchange", function () {
+    var c = codeAus(location.hash.slice(1));
+    if (c && c !== code) { code = c; merken(S_CODE, c); zugangPruefen(); }
+  });
+  var geladenUm = Date.now();
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) return;
+    if (!fHz.value && !fPv.value) fDatum.value = heute();
+    if (Date.now() - geladenUm > 60000) { geladenUm = Date.now(); laden(); }
+  });
+
+  /* ---------- Start ---------- */
+  setText("stand", "PV-Tracking · lädt …");
+  fDatum.value = heute();
+  laden();
+  zugangPruefen();
 })();
 </script>
 </body>
